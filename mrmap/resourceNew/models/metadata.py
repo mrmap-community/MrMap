@@ -202,6 +202,7 @@ class RemoteMetadata(CommonInfo):
     link = models.URLField(max_length=4094,
                            verbose_name=_("download link"),
                            help_text=_("the url where the metadata could be downloaded from."))
+    # todo: refactor this field as FileField
     remote_content = models.TextField(null=True,
                                       verbose_name=_("remote content"),
                                       help_text=_("the fetched content of the download url."))

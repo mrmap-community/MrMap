@@ -13,6 +13,8 @@ from resourceNew.xmlmapper.consts import NS_WC
 from resourceNew.enums.service import OGCServiceEnum, OGCServiceVersionEnum
 from django.conf import settings
 
+from resourceNew.xmlmapper.namespaces import INSPIRE_VS, INSPIRE_COMMON
+
 
 class XlinkHref(xmlmap.XmlObject):
     url = xmlmap.StringField(xpath="@xlink:href")
@@ -427,11 +429,22 @@ class ServiceType(DBModelConverterMixin, xmlmap.XmlObject):
         return dic
 
 
+class InspireMetadataUrl(DBModelConverterMixin, xmlmap.XmlObject):
+    ROOT_NAME = "ExtendedCapabilities"
+    ROOT_NS = "inspire_vs"
+    ROOT_NAMESPACES = dict([("inspire_vs", INSPIRE_VS),
+                            ("inspire_common", INSPIRE_COMMON)])
+    link = xmlmap.StringField(xpath="inspire_common:MetadataUrl/inspire_common:URL")
+    media_type = xmlmap.StringField(xpath="inspire_common:MetadataUrl/inspire_common:MediaType")
+    default_language = xmlmap.StringField(xpath="inspire_common:SupportedLanguages/inspire_common:DefaultLanguage/inspire_common:Language")
+    response_language = xmlmap.StringField(xpath="inspire_common:ResponseLanguage/inspire_common:Language")
+
+
 class Service(DBModelConverterMixin, xmlmap.XmlObject):
     model = 'resourceNew.Service'
     # todo: new field with node_class RemoteMetadata for wms and wfs
     remote_metadata = None
-    url = xmlmap.NodeField(xpath=f"//{NS_WC}Service']/{NS_WC}OnlineResource']", node_class=XlinkHref)
+    url = xmlmap.StringField(xpath=f"Service/OnlineResource[@xlink:type='simple']/@xlink:href")
 
     def get_field_dict(self):
         field_dict = super().get_field_dict()
@@ -441,6 +454,8 @@ class Service(DBModelConverterMixin, xmlmap.XmlObject):
 
 
 class WmsService(Service):
+    ROOT_NAME = "WMS_Capabilities"
+
     all_layers = None
     service_type = xmlmap.NodeField(xpath=".", node_class=ServiceType)
     service_metadata = xmlmap.NodeField(xpath=f"{NS_WC}Service']", node_class=ServiceMetadata)
@@ -463,6 +478,8 @@ class Wms111Service(WmsService):
 
 
 class Wms130Service(WmsService):
+
+
     root_layer = xmlmap.NodeField(xpath=f"{NS_WC}Capability']/{NS_WC}Layer']", node_class=Layer130)
 
 
