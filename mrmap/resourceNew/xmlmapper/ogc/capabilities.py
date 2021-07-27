@@ -15,7 +15,7 @@ from resourceNew.xmlmapper.consts import NS_WC
 from resourceNew.enums.service import OGCServiceEnum, OGCServiceVersionEnum
 from django.conf import settings
 
-from resourceNew.xmlmapper.namespaces import INSPIRE_VS, INSPIRE_COMMON
+from resourceNew.xmlmapper.namespaces import INSPIRE_VS_NAMESPACE, INSPIRE_COMMON_NAMESPACE
 
 
 class XlinkHref(xmlmap.XmlObject):
@@ -269,15 +269,13 @@ class ServiceMetadata(DBModelConverterMixin, xmlmap.XmlObject):
                                     node_class=Keyword)
 
 
-class WmsServiceMetadata(DBModelConverterMixin, xmlmap.XmlObject):
+class WmsServiceMetadata(ServiceMetadata):
     # ForeignKey
     service_contact = xmlmap.NodeField(xpath="ContactInformation",
                                        node_class=ServiceMetadataContact)
     # ManyToManyField
     keywords = xmlmap.NodeListField(xpath=f"{NS_WC}KeywordList']/{NS_WC}Keyword']",
                                     node_class=Keyword)
-
-
 
 EDGE_COUNTER = 0
 
@@ -441,8 +439,8 @@ class ServiceType(DBModelConverterMixin, xmlmap.XmlObject):
 class InspireMetadataUrl(DBModelConverterMixin, xmlmap.XmlObject):
     ROOT_NAME = "ExtendedCapabilities"
     ROOT_NS = "inspire_vs"
-    ROOT_NAMESPACES = dict([("inspire_vs", INSPIRE_VS),
-                            ("inspire_common", INSPIRE_COMMON)])
+    ROOT_NAMESPACES = dict([("inspire_vs", INSPIRE_VS_NAMESPACE),
+                            ("inspire_common", INSPIRE_COMMON_NAMESPACE)])
 
     link = xmlmap.StringField(xpath="inspire_common:MetadataUrl/inspire_common:URL")
     media_type = xmlmap.StringField(xpath="inspire_common:MetadataUrl/inspire_common:MediaType")
