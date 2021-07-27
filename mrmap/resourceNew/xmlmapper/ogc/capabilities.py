@@ -1,3 +1,5 @@
+from abc import ABC
+
 from django.utils import timezone
 from django.contrib.gis.geos import Polygon
 from eulxml import xmlmap
@@ -255,19 +257,26 @@ class FeatureTypeMetadata(ServiceElementMetadata):
 
 class ServiceMetadata(DBModelConverterMixin, xmlmap.XmlObject):
     model = 'resourceNew.ServiceMetadata'
+    ROOT_NAME = "Service"
 
-    title = xmlmap.StringField(xpath=f"{NS_WC}Title']")
-    abstract = xmlmap.StringField(xpath=f"{NS_WC}Abstract']")
-    fees = xmlmap.StringField(xpath=f"{NS_WC}Fees']")
-    access_constraints = xmlmap.StringField(xpath=f"{NS_WC}AccessConstraints']")
-
-    # ForeignKey
-    service_contact = xmlmap.NodeField(xpath=f"{NS_WC}ContactInformation']|../{NS_WC}ServiceProvider']",
-                                       node_class=ServiceMetadataContact)
+    title = xmlmap.StringField(xpath="Title")
+    abstract = xmlmap.StringField(xpath="Abstract")
+    fees = xmlmap.StringField(xpath="Fees")
+    access_constraints = xmlmap.StringField(xpath="AccessConstraints")
 
     # ManyToManyField
     keywords = xmlmap.NodeListField(xpath=f"{NS_WC}KeywordList']/{NS_WC}Keyword']|{NS_WC}Keywords']/{NS_WC}Keyword']",
                                     node_class=Keyword)
+
+
+class WmsServiceMetadata(DBModelConverterMixin, xmlmap.XmlObject):
+    # ForeignKey
+    service_contact = xmlmap.NodeField(xpath="ContactInformation",
+                                       node_class=ServiceMetadataContact)
+    # ManyToManyField
+    keywords = xmlmap.NodeListField(xpath=f"{NS_WC}KeywordList']/{NS_WC}Keyword']",
+                                    node_class=Keyword)
+
 
 
 EDGE_COUNTER = 0
@@ -434,6 +443,7 @@ class InspireMetadataUrl(DBModelConverterMixin, xmlmap.XmlObject):
     ROOT_NS = "inspire_vs"
     ROOT_NAMESPACES = dict([("inspire_vs", INSPIRE_VS),
                             ("inspire_common", INSPIRE_COMMON)])
+
     link = xmlmap.StringField(xpath="inspire_common:MetadataUrl/inspire_common:URL")
     media_type = xmlmap.StringField(xpath="inspire_common:MetadataUrl/inspire_common:MediaType")
     default_language = xmlmap.StringField(xpath="inspire_common:SupportedLanguages/inspire_common:DefaultLanguage/inspire_common:Language")
@@ -441,29 +451,36 @@ class InspireMetadataUrl(DBModelConverterMixin, xmlmap.XmlObject):
 
 
 class Service(DBModelConverterMixin, xmlmap.XmlObject):
+    """Abstract service xml mapper class"""
     model = 'resourceNew.Service'
-    # todo: new field with node_class RemoteMetadata for wms and wfs
-    remote_metadata = None
-    url = xmlmap.StringField(xpath=f"Service/OnlineResource[@xlink:type='simple']/@xlink:href")
-
-    def get_field_dict(self):
-        field_dict = super().get_field_dict()
-        if self.url:
-            field_dict.update({"url": self.url.url})
-        return field_dict
+    remote_metadata = xmlmap.NodeField(xpath="inspire_vs:ExtendedCapabilities",
+                                       node_class=InspireMetadataUrl)
+    url = xmlmap.StringField(xpath="Service/OnlineResource[@xlink:type='simple']/@xlink:href")
 
 
 class WmsService(Service):
+    """Abstract wms service xml mapper class.
+
+    :attr all_layers: cache to store the layer list, which is computed by the :meth:`~.get_all_layers`
+    """
     ROOT_NAME = "WMS_Capabilities"
 
     all_layers = None
     service_type = xmlmap.NodeField(xpath=".", node_class=ServiceType)
-    service_metadata = xmlmap.NodeField(xpath=f"{NS_WC}Service']", node_class=ServiceMetadata)
+    service_metadata = xmlmap.NodeField(xpath="Service", node_class=ServiceMetadata)
     operation_urls = xmlmap.NodeListField(xpath=f"{NS_WC}Capability']/{NS_WC}Request']//{NS_WC}DCPType']/{NS_WC}HTTP']"
                                                 f"//{NS_WC}OnlineResource']",
                                           node_class=WmsOperationUrl)
 
     def get_all_layers(self):
+        """Return all layers of the wms in pre order.
+
+        .. note::
+           the returned layer list is cached in :attr all_layers:
+
+        :return all_layers: all layers
+        :rtype: list
+        """
         if not self.all_layers:
             self.all_layers = self.root_layer.get_descendants()
         return self.all_layers
