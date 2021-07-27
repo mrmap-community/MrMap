@@ -2,6 +2,28 @@ from django.contrib import messages
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 import re
+from django.conf import settings
+
+
+def get_absolute_url(reverse_url) -> str:
+    """Convert the given path url to an absolute url with the currently configured schema and hostname.
+
+    :Example:
+
+    .. code-block:: python
+       from main.utils import get_absolute_url
+
+       reverse_url = "services/123/xml"
+       absolute_url = get_absolute_url(reverse_url=reverse_url)
+
+       print(absolute_url)
+       >>> https://mrmap.org/services/123/xml
+
+
+    :return absolute_url: the given url path as absolute url
+    :rtype: str
+    """
+    return f"{settings.ROOT_URL}{reverse_url}"
 
 
 def camel_to_snake(name):
