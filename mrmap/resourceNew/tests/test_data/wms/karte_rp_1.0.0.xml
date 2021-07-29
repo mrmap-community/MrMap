@@ -1,0 +1,1268 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE WMT_MS_Capabilities SYSTEM "http://schemas.opengis.net/wms/1.0.0/capabilities_1_0_0.dtd">
+<!-- end of DOCTYPE declaration -->
+<WMT_MS_Capabilities version="1.0.0">
+
+<!-- MapServer version 7.6.2 OUTPUT=PNG OUTPUT=JPEG OUTPUT=KML SUPPORTS=PROJ SUPPORTS=AGG SUPPORTS=FREETYPE SUPPORTS=CAIRO SUPPORTS=SVG_SYMBOLS SUPPORTS=RSVG SUPPORTS=ICONV SUPPORTS=FRIBIDI SUPPORTS=WMS_SERVER SUPPORTS=WMS_CLIENT SUPPORTS=WFS_SERVER SUPPORTS=WFS_CLIENT SUPPORTS=WCS_SERVER SUPPORTS=SOS_SERVER SUPPORTS=FASTCGI SUPPORTS=THREADS SUPPORTS=GEOS SUPPORTS=POINT_Z_M SUPPORTS=PBF INPUT=JPEG INPUT=POSTGIS INPUT=OGR INPUT=GDAL INPUT=SHAPEFILE -->
+
+<Service>
+  <Name>GetMap</Name>
+  <Title>Karte RP</Title>
+  <Abstract>Digitales Landschaftsmodell</Abstract>
+  <Keywords>DLM Landschaftsmodell Atkis AdVMIS   </Keywords>
+  <OnlineResource>http://geo5.service24.rlp.de/wms/karte_rp.fcgi?</OnlineResource>
+  <Fees>geldleistungsfrei, Datenlizenz Deutschland – Namensnennung – Version 2.0, URL: https://www.govdata.de/dl-de/by-2-0</Fees>
+  <AccessConstraints>Datenlizenz Deutschland – Namensnennung – Version 2.0; URL: https://www.govdata.de/dl-de/by-2-0 Die Namensnennung der Vermessungs- und Katasterverwaltung Rheinland-Pfalz als Rechteinhaberin hat in folgender Weise zu erfolgen: ©GeoBasis-DE / LVermGeoRP (Jahr des Datenbezugs), dl-de/by-2-0, http://www.lvermgeo.rlp.de [Daten bearbeitet]; Es gelten folgende Regelungen zu Gewährleistung und Haftung; URL: https://lvermgeo.rlp.de/de/geodaten/opendata/gewaehrleistung-haftung/</AccessConstraints>
+</Service>
+
+<Capability>
+  <Request>
+    <Map>
+      <Format><PNG/><JPEG/><SVG/></Format>
+      <DCPType>
+        <HTTP>
+          <Get onlineResource="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?"/>
+          <Post onlineResource="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?"/>
+        </HTTP>
+      </DCPType>
+    </Map>
+    <Capabilities>
+      <Format><WMS_XML/></Format>
+      <DCPType>
+        <HTTP>
+          <Get onlineResource="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?"/>
+          <Post onlineResource="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?"/>
+        </HTTP>
+      </DCPType>
+    </Capabilities>
+    <FeatureInfo>
+      <Format><MIME/><GML.1/></Format>
+      <DCPType>
+        <HTTP>
+          <Get onlineResource="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?"/>
+          <Post onlineResource="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?"/>
+        </HTTP>
+      </DCPType>
+    </FeatureInfo>
+  </Request>
+  <Exception>
+    <Format><BLANK/><INIMAGE/><WMS_XML/></Format>
+  </Exception>
+  <VendorSpecificCapabilities/>
+  <Layer>
+    <Name>atkis1</Name>
+    <Title>Karte RP</Title>
+    <Abstract>Digitales Landschaftsmodell</Abstract>
+    <Keywords>DLM Landschaftsmodell Atkis AdVMIS     </Keywords>
+    <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857 EPSG:900913</SRS>
+    <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+    <BoundingBox SRS="EPSG:25832" minx="290000" miny="5.42e+06" maxx="466000" maxy="5.648e+06"/>
+    <Layer>
+      <Name>Landesflaeche</Name>
+      <Title>Landesfläche</Title>
+      <Abstract>Landesflaeche</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="118" height="73">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Landesflaeche&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>rlp_00</Name>
+        <Title>Land 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="4.9895273871448" max="8.73079984751865"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>rlp_01</Name>
+        <Title>Land 1</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="8.73129875036708" max="24.9451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>rlp_02</Name>
+        <Title>Land 2</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="24.9456413243303" max="49.8902848429637"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>rlp_03</Name>
+        <Title>Land 3</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="49.8907837458121" max="199.561139371855"/>
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>Wald</Name>
+<!-- WARNING: Mandatory metadata '..._GROUP_TITLE' was missing in this context. -->
+      <Title>Wald</Title>
+      <Abstract>Wald</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="94" height="124">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Wald&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>wald_00</Name>
+        <Title>Wald 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="4.98902848429637" max="5.98683418115564"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>wald_01</Name>
+        <Title>Wald 1</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="5.98733308400407" max="8.73079984751865"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>wald_02</Name>
+        <Title>Wald 2</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="8.73129875036708" max="24.9451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>wald_03</Name>
+        <Title>Wald 3</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="24.9456413243303" max="49.8902848429637"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>wald_04</Name>
+        <Title>Wald 4</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="49.8907837458121" max="199.561139371855"/>
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>Sonderkultur</Name>
+<!-- WARNING: Mandatory metadata '..._GROUP_TITLE' was missing in this context. -->
+      <Title>Sonderkultur</Title>
+      <Abstract>Sonderkultur</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="163" height="238">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Sonderkultur&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>sonderkultur_00</Name>
+        <Title>Sonderkultur 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="4.98902848429637" max="5.98683418115564"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>sonderkultur_01</Name>
+        <Title>Sonderkultur 1</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="5.98733308400407" max="8.73079984751865"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>sonderkultur_02</Name>
+        <Title>Sonderkultur 2</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="8.73129875036708" max="24.9451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>sonderkultur_03</Name>
+        <Title>Sonderkultur 3</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="24.9456413243303" max="49.8902848429637"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>sonderkultur_04</Name>
+        <Title>Sonderkultur 4</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="49.8907837458121" max="59.8683418115564"/>
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>Ortslage</Name>
+      <Title>Ortslage</Title>
+      <Abstract>Ortslage</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="83" height="147">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Ortslage&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>ortslage_000</Name>
+        <Title>Ortslage 00</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="4.98902848429637"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>ortslage_00</Name>
+        <Title>Ortslage 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="4.98902848429637" max="5.98683418115564"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>ortslage_01</Name>
+        <Title>Ortslage 1</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="5.98733308400407" max="8.73079984751865"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>ortslage_02</Name>
+        <Title>Ortslage 2</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="8.73129875036708" max="24.9451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>ortslage_03</Name>
+        <Title>Ortslage 3</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="24.9456413243303" max="49.8902848429637"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>ortslage_04</Name>
+        <Title>Ortslage 4</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="49.8907837458121" max="99.7805696859274"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>ax_friedhof_0</Name>
+        <Title>Friedhof 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="4.98902848429637"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>ax_friedhof_1</Name>
+        <Title>Friedhof</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="4.9895273871448" max="9.97805696859274"/>
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>Flughaefen</Name>
+      <Title>Flughaefen</Title>
+      <Abstract>Flughaefen</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="91" height="41">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Flughaefen&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>flughafen01</Name>
+        <Title>Flughafenflaeche</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis Flughafen         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258</SRS>
+        <LatLonBoundingBox minx="7.60901" miny="49.3594" maxx="10.3888" maxy="51.7493"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.61118e+06" miny="5.47051e+06" maxx="2.81386e+06" maxy="5.74322e+06"/>
+        <ScaleHint min="0.498902848429637" max="152.165368771039"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>flughafen02</Name>
+        <Title>Flughafengelaende</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis Flughafen         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258</SRS>
+        <LatLonBoundingBox minx="7.60901" miny="49.3594" maxx="10.3888" maxy="51.7493"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.61118e+06" miny="5.47051e+06" maxx="2.81386e+06" maxy="5.74322e+06"/>
+        <ScaleHint min="0.498902848429637" max="37.9166164806524"/>
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>Industrie</Name>
+      <Title>Industrieflächen</Title>
+      <Abstract>Industrie</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="191" height="126">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Industrie&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>industrie_00</Name>
+        <Title>Industrie 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="4.98902848429637" max="5.98683418115564"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>industrie_01</Name>
+        <Title>Industrie 1</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="5.98733308400407" max="8.73079984751865"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>industrie_02</Name>
+        <Title>Industrie 2</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="8.73129875036708" max="24.9451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>industrie_03</Name>
+        <Title>Industrie 3</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="24.9456413243303" max="49.8902848429637"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>industrie_04</Name>
+        <Title>Industrie 4</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="49.8907837458121" max="99.7805696859274"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>tagebau_0</Name>
+        <Title>Tagebau 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="3.74177136322228"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>tagebau_1</Name>
+        <Title>Tagebau 1</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="3.74177136322228" max="59.8683418115564"/>
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>Schummerung</Name>
+      <Title>Schummerung</Title>
+      <Abstract>Schummerung</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="33" height="5">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Schummerung&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>SchummerungRP</Name>
+        <Title>Schummerung</Title>
+        <SRS>EPSG:25832 EPSG:25833 EPSG:3857 EPSG:4258 EPSG:4326 EPSG:31466 EPSG:31467 EPSG:31468 EPSG:31469 EPSG:9935832</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:25832" minx="290000" miny="5.42e+06" maxx="466000" maxy="5.648e+06"/>
+        <ScaleHint min="4.9895273871448" max="199.561139371855"/>
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>Fluesse</Name>
+      <Title>Flüsse</Title>
+      <Abstract>Fluesse</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="63" height="158">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Fluesse&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>baeche_0</Name>
+        <Title>Baeche 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="12.2231197865261"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>baeche_1</Name>
+        <Title>Baeche 1</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="12.2231197865261" max="24.9451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>fluss_00</Name>
+        <Title>Fluesse 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="3.74177136322228"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>fluss_01</Name>
+        <Title>Fluesse 1</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="3.74227026607071" max="8.73079984751865"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>fluss_02</Name>
+        <Title>Fluesse 2</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="8.73129875036708" max="24.9451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>fluss_03</Name>
+        <Title>Fluesse 3</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="24.9456413243303" max="49.8902848429637"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>fluss_04</Name>
+        <Title>Fluesse 4</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="49.8907837458121" max="149.670854528891"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>fluss_05</Name>
+        <Title>Fluesse 5</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="149.67135343174" max="374.177136322228"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>fluss_06</Name>
+        <Title>Fluesse 6</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="374.177635225076" max="0"/>
+        <!-- WARNING: Only MINSCALEDENOM and no MAXSCALEDENOM specified in the mapfile. A default value of 0 has been returned for the Max ScaleHint but this is probably not what you want. -->
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>Seen</Name>
+      <Title>Seen</Title>
+      <Abstract>Seen</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="55" height="141">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Seen&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>see_00</Name>
+        <Title>Seen 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="4.98902848429637"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>see_0</Name>
+        <Title>Seen 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="4.9895273871448" max="5.98683418115564"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>see_1</Name>
+        <Title>Seen 1</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="5.98733308400407" max="8.73079984751865"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>see_2</Name>
+        <Title>Seen 2</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="8.73129875036708" max="24.9451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>see_3</Name>
+        <Title>Seen 3</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="24.9456413243303" max="49.8902848429637"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>see_4</Name>
+        <Title>Seen 4</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="49.8907837458121" max="149.670854528891"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>see_5</Name>
+        <Title>Seen 5</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="149.67135343174" max="374.177136322228"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>see_6</Name>
+        <Title>Seen 6</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="374.177635225076" max="0"/>
+        <!-- WARNING: Only MINSCALEDENOM and no MAXSCALEDENOM specified in the mapfile. A default value of 0 has been returned for the Max ScaleHint but this is probably not what you want. -->
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>Wege</Name>
+      <Title>Wege</Title>
+      <Abstract>Wege</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="126" height="110">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Wege&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>weg_00</Name>
+        <Title>Wegenamen</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258</SRS>
+        <LatLonBoundingBox minx="7.60901" miny="49.3594" maxx="10.3888" maxy="51.7493"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.61118e+06" miny="5.47051e+06" maxx="2.81386e+06" maxy="5.74322e+06"/>
+        <ScaleHint min="0" max="2.49451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>weg_0</Name>
+        <Title>Wege 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="4.98902848429637"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>weg_0_fuss</Name>
+        <Title>Wege 0 Fuss</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="4.98902848429637"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>weg_1</Name>
+        <Title>Wege 1</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="4.98902848429637" max="12.4725712107409"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>Fahrbahn</Name>
+        <Title>Fahrbahnachse</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="1.74615996950373"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>faehre</Name>
+        <Title>Fährverbindungen</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="19.9561139371855"/>
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>Bauwerke</Name>
+      <Title>Bauwerke</Title>
+      <Abstract>Bauwerke</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="187" height="129">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Bauwerke&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>ax_gebaeude</Name>
+        <Title>Gebäude</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>Alkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="4.98902848429637"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>ax_turm</Name>
+        <Title>Turm</Title>
+        <Abstract>Liegenschaftskataster, AX_Turm Objekte</Abstract>
+        <Keywords>Alkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="4.98902848429637"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>ax_vorratsb</Name>
+        <Title>Vorratsbehälter/Speicher</Title>
+        <Abstract>Liegenschaftskataster, AX_VorratsBehaelterspeicher Objekte</Abstract>
+        <Keywords>Alkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="4.98902848429637"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>ax_sonstigesbw</Name>
+        <Title>Sonstiges Bauwerk</Title>
+        <Abstract>Liegenschaftskataster, AX_VorratsBehaelterspeicher Objekte</Abstract>
+        <Keywords>Alkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="4.98902848429637"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>ax_bw_sfe</Name>
+        <Title>Sport/Freizeit/Erholung</Title>
+        <Abstract>Liegenschaftskataster, ax_bauwerkoderanlagefuersportfreizeitunderholung Objekte</Abstract>
+        <Keywords>Alkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="4.98902848429637"/>
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>Gemeindestrassen</Name>
+<!-- WARNING: Mandatory metadata '..._GROUP_TITLE' was missing in this context. -->
+      <Title>Gemeindestrassen</Title>
+      <Abstract>Gemeindestrassen</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="135" height="39">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Gemeindestrassen&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>Gemeindestrasse_0</Name>
+        <Title>Gemeindestrassen 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="2.49451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>Gemeindestrasse_1</Name>
+        <Title>Gemeindestrassen 1</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="2.49451424214819" max="24.9451424214819"/>
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>Kreisstrassen</Name>
+<!-- WARNING: Mandatory metadata '..._GROUP_TITLE' was missing in this context. -->
+      <Title>Kreisstrassen</Title>
+      <Abstract>Kreisstrassen</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="104" height="56">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Kreisstrassen&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>Kreisstrasse_0</Name>
+        <Title>Kreisstrassen 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="2.49451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>Kreisstrasse_1</Name>
+        <Title>Kreisstrassen 1</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="2.49451424214819" max="19.9561139371855"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>Kreisstrasse_2</Name>
+        <Title>Kreisstrassen 2</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="19.9561139371855" max="99.7805696859274"/>
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>Landesstrassen</Name>
+<!-- WARNING: Mandatory metadata '..._GROUP_TITLE' was missing in this context. -->
+      <Title>Landesstrassen</Title>
+      <Abstract>Landesstrassen</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="117" height="90">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Landesstrassen&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>Landesstrasse_0</Name>
+        <Title>Landesstrassen 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="2.49451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>Landesstrasse_1</Name>
+        <Title>Landesstrassen 1</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="2.49451424214819" max="24.9451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>Landesstrasse_2</Name>
+        <Title>Landesstrassen 2</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="24.9451424214819" max="149.670854528891"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>Landesstrasse_3</Name>
+        <Title>Landesstrassen 3</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="149.670854528891" max="249.451424214819"/>
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>Bundesstrassen</Name>
+<!-- WARNING: Mandatory metadata '..._GROUP_TITLE' was missing in this context. -->
+      <Title>Bundesstrassen</Title>
+      <Abstract>Bundesstrassen</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="119" height="90">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Bundesstrassen&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>Bundesstrasse_0</Name>
+        <Title>Bundesstrassen 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="2.49451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>Bundesstrasse_1</Name>
+        <Title>Bundesstrassen 1</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="2.49451424214819" max="24.9451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>Bundesstrasse_2</Name>
+        <Title>Bundesstrassen 2</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="24.9451424214819" max="149.670854528891"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>Bundesstrasse_3</Name>
+        <Title>Bundesstrassen 3</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="149.670854528891" max="698.463987801492"/>
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>Autobahnen</Name>
+<!-- WARNING: Mandatory metadata '..._GROUP_TITLE' was missing in this context. -->
+      <Title>Autobahnen</Title>
+      <Abstract>Autobahnen</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="90" height="73">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Autobahnen&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>Autobahn_0</Name>
+        <Title>Autobahnen 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="2.49451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>Autobahn_1</Name>
+        <Title>Autobahnen 1</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="2.49451424214819" max="24.9451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>Autobahn_2</Name>
+        <Title>Autobahnen 2</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="24.9451424214819" max="149.670854528891"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>Autobahn_3</Name>
+        <Title>Autobahnen 3</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="149.670854528891" max="1995.61139371855"/>
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>Bahn</Name>
+<!-- WARNING: Mandatory metadata '..._GROUP_TITLE' was missing in this context. -->
+      <Title>Bahn</Title>
+      <Abstract>Bahn</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="82" height="73">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Bahn&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>bahn_00</Name>
+        <Title>Bahn 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="2.49451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>bahn_01</Name>
+        <Title>Bahn 1</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="2.49451424214819" max="24.9451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>bahn_02</Name>
+        <Title>Bahn 2</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="24.9451424214819" max="149.670854528891"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>bahnhof</Name>
+        <Title>Bahnhof</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258</SRS>
+        <LatLonBoundingBox minx="7.60901" miny="49.3594" maxx="10.3888" maxy="51.7493"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.61118e+06" miny="5.47051e+06" maxx="2.81386e+06" maxy="5.74322e+06"/>
+        <ScaleHint min="0" max="12.4725712107409"/>
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>Ortschaften</Name>
+<!-- WARNING: Mandatory metadata '..._GROUP_TITLE' was missing in this context. -->
+      <Title>Ortschaften</Title>
+      <Abstract>Ortschaften</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="151" height="230">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Ortschaften&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>orte_01</Name>
+        <Title>Orte 01</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="4.98902848429637"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>orte_0</Name>
+        <Title>Orte 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="4.98902848429637" max="24.9451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>orte_1</Name>
+        <Title>Orte 1</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="74.8354272644456"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>orte_2</Name>
+        <Title>Orte 2</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="149.670854528891"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>orte_3</Name>
+        <Title>Orte 3</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="299.341709057782"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>orte_4</Name>
+        <Title>Orte 4</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="399.12227874371"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>orte_5</Name>
+        <Title>Orte 5</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="748.354272644456"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>orte_6</Name>
+        <Title>Orte 6</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="748.354272644456"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>orte_7</Name>
+        <Title>Orte 7</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>schutzhuette_0</Name>
+        <Title>Schutzhuetten 0</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="4.9895273871448"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>schutzhuette_1</Name>
+        <Title>Schutzhuetten 1</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="4.9895273871448" max="17.4615996950373"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>berge</Name>
+        <Title>Berggipfel</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="99.7810685887758"/>
+      </Layer>
+    </Layer>
+    <Layer>
+      <Name>Leitungen</Name>
+<!-- WARNING: Mandatory metadata '..._GROUP_TITLE' was missing in this context. -->
+      <Title>Leitungen</Title>
+      <Abstract>Leitungen</Abstract>
+    <Style>
+       <Name>default</Name>
+       <Title>default</Title>
+       <LegendURL width="112" height="41">
+          <Format>image/png</Format>
+          <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="http://geo5.service24.rlp.de/wms/karte_rp.fcgi?version=1.0.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;layer=Leitungen&amp;format=image/png&amp;STYLE=default"/>
+       </LegendURL>
+    </Style>
+      <Layer queryable="0">
+        <Name>ax_leitung</Name>
+        <Title>Leitungen</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="24.9451424214819"/>
+      </Layer>
+      <Layer queryable="0">
+        <Name>leitungsmasten</Name>
+        <Title>Oberleitungsmast</Title>
+        <Abstract>Digitales Landschaftsmodell</Abstract>
+        <Keywords>DLM Landschaftsmodell Atkis         </Keywords>
+        <SRS>EPSG:31466 EPSG:31467 EPSG:25832 EPSG:4326 EPSG:4258 EPSG:3857</SRS>
+        <LatLonBoundingBox minx="6.01048" miny="48.8973" maxx="8.53579" maxy="50.9826"/>
+        <BoundingBox SRS="EPSG:31466" minx="2.50078e+06" miny="5.41778e+06" maxx="2.68584e+06" maxy="5.65272e+06"/>
+        <ScaleHint min="0" max="24.9451424214819"/>
+      </Layer>
+    </Layer>
+  </Layer>
+</Capability>
+</WMT_MS_Capabilities>

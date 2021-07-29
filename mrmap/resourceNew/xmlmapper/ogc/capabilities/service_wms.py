@@ -173,17 +173,7 @@ class WmsGetStylesUrls(WmsOperationUrls):
     ROOT_NAME = "GetStyles"
 
 
-class WmsService(Service):
-    """Abstract wms service xml mapper class.
-
-    :attr all_layers: cache to store the layer list, which is computed by the :meth:`~.get_all_layers`
-    """
-    all_layers = None
-    get_capabilities_urls = xmlmap.NodeField(xpath="Capability/Request/GetCapabilities",
-                                             node_class=WmsGetCapabilitiesUrls)
-    get_map_urls = xmlmap.NodeField(xpath="Capability/Request/GetMap",
-                                    node_class=WmsGetMapUrls)
-
+class WmsOperationUrlsMixin:
     @property
     def operation_urls(self):
         _operation_urls = []
@@ -222,6 +212,29 @@ class WmsService(Service):
 
             _operation_url.mime_types.extend(operation_url.get("mime_types", []))
 
+
+class Wms110OperationUrlsMixin(WmsOperationUrlsMixin):
+    get_capabilities_urls = xmlmap.NodeField(xpath="Capability/Request/GetCapabilities",
+                                             node_class=WmsGetCapabilitiesUrls)
+    get_map_urls = xmlmap.NodeField(xpath="Capability/Request/GetMap",
+                                    node_class=WmsGetMapUrls)
+    get_feature_info_urls = xmlmap.NodeField(xpath="Capability/Request/GetFeatureInfo",
+                                             node_class=WmsGetFeatureInfoUrls)
+    get_describe_layer_urls = xmlmap.NodeField(xpath="Capability/Request/DescribeLayer",
+                                               node_class=WmsDescribeLayerUrls)
+    get_legend_graphic_urls = xmlmap.NodeField(xpath="Capability/Request/GetLegendGraphic",
+                                               node_class=WmsGetLegendGraphicUrls)
+    get_styles_urls = xmlmap.NodeField(xpath="Capability/Request/GetStyles",
+                                       node_class=WmsGetStylesUrls)
+
+
+class WmsService(Service):
+    """Abstract wms service xml mapper class.
+
+    :attr all_layers: cache to store the layer list, which is computed by the :meth:`~.get_all_layers`
+    """
+    all_layers = None
+
     def get_all_layers(self):
         """Return all layers of the wms in pre order.
 
@@ -240,15 +253,15 @@ class Wms100Service(WmsService):
     ROOT_NAME = "WMT_MS_Capabilities"
     service_metadata = xmlmap.NodeField(xpath="Service", node_class=Wms100ServiceMetadata)
     root_layer = xmlmap.NodeField(xpath="Capability/Layer", node_class=Layer100)
+    # todo operation urls
 
-
-class Wms110Service(WmsService):
+class Wms110Service(Wms110OperationUrlsMixin, WmsService):
     ROOT_NAME = "WMT_MS_Capabilities"
     service_metadata = xmlmap.NodeField(xpath="Service", node_class=Wms110ServiceMetadata)
     root_layer = xmlmap.NodeField(xpath="Capability/Layer", node_class=Layer100)
 
 
-class Wms111Service(WmsService):
+class Wms111Service(Wms110OperationUrlsMixin, WmsService):
     ROOT_NAME = "WMT_MS_Capabilities"
     service_metadata = xmlmap.NodeField(xpath="Service", node_class=Wms110ServiceMetadata)
     root_layer = xmlmap.NodeField(xpath="Capability/Layer", node_class=Layer111)
