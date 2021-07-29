@@ -131,3 +131,11 @@ class DBModelConverterMixin:
         instance = cls()
         instance.update_fields(obj=initial)
         return instance
+
+
+class DynamicRootNameMixin:
+
+    def __init__(self, *args, root_name=None,  **kwargs):
+        if root_name:
+            self.ROOT_NAME = root_name
+        super().__init__(*args, **kwargs)

@@ -1,26 +1,40 @@
 from eulxml import xmlmap
-
+from resourceNew.xmlmapper.exceptions import SemanticError
 from resourceNew.xmlmapper.mixins import DBModelConverterMixin
-from resourceNew.xmlmapper.namespaces import INSPIRE_VS_NAMESPACE, INSPIRE_COMMON_NAMESPACE, XLINK_NAMESPACE
+from resourceNew.xmlmapper.namespaces import INSPIRE_VS_NAMESPACE, XLINK_NAMESPACE
+from resourceNew.xmlmapper.ogc.capabilities.metadata import InspireMetadataUrl
 
 
-class InspireMetadataUrl(DBModelConverterMixin, xmlmap.XmlObject):
-    ROOT_NAME = "ExtendedCapabilities"
-    ROOT_NS = "inspire_vs"
-    ROOT_NAMESPACES = dict([("inspire_vs", INSPIRE_VS_NAMESPACE),
-                            ("inspire_common", INSPIRE_COMMON_NAMESPACE)])
+class ReferenceSystem(DBModelConverterMixin, xmlmap.XmlObject):
+    model = "resourceNew.ReferenceSystem"
 
-    link = xmlmap.StringField(xpath="inspire_common:MetadataUrl/inspire_common:URL")
-    media_type = xmlmap.StringField(xpath="inspire_common:MetadataUrl/inspire_common:MediaType")
-    default_language = xmlmap.StringField(xpath="inspire_common:SupportedLanguages/inspire_common:DefaultLanguage/inspire_common:Language")
-    response_language = xmlmap.StringField(xpath="inspire_common:ResponseLanguage/inspire_common:Language")
+    ref_system = xmlmap.StringField(xpath=".")
+
+    def get_field_dict(self):
+        dic = super().get_field_dict()
+
+        ref_system = dic.get("ref_system", None)
+        if "::" in ref_system:
+            # example: ref_system = urn:ogc:def:crs:EPSG::4326
+            code = ref_system.rsplit(":")[-1]
+            prefix = ref_system.rsplit(":")[-3]
+        elif ":" in ref_system:
+            # example: ref_system = EPSG:4326
+            code = ref_system.rsplit(":")[-1]
+            prefix = ref_system.rsplit(":")[-2]
+        else:
+            raise SemanticError("reference system unknown")
+        dic.update({"code": code,
+                    "prefix": prefix.upper()})
+        del dic["ref_system"]
+        return dic
 
 
-class OperationUrl(DBModelConverterMixin, xmlmap.XmlObject):
-    model = 'resourceNew.OperationUrl'
+class OnlineResource(DBModelConverterMixin, xmlmap.XmlObject):
     ROOT_NAME = "OnlineResource"
     ROOT_NAMESPACES = dict([("xlink", XLINK_NAMESPACE)])
     url = xmlmap.StringField(xpath="@xlink:href")
+    type = xmlmap.StringField(xpath="@xlink:type")
 
     def get_field_dict(self):
         dic = super().get_field_dict()
@@ -33,14 +47,17 @@ class OperationUrl(DBModelConverterMixin, xmlmap.XmlObject):
         return dic
 
 
+class OperationUrl(DBModelConverterMixin, xmlmap.XmlObject):
+    model = "resourceNew.OperationUrl"
+
+
 class Service(DBModelConverterMixin, xmlmap.XmlObject):
     """Abstract service xml mapper class"""
     model = 'resourceNew.Service'
     ROOT_NAMESPACES = dict([("inspire_vs", INSPIRE_VS_NAMESPACE),
                             ("xlink", XLINK_NAMESPACE)])
-
     remote_metadata = xmlmap.NodeField(xpath="inspire_vs:ExtendedCapabilities",
                                        node_class=InspireMetadataUrl)
     url = xmlmap.StringField(xpath="Service/OnlineResource[@xlink:type='simple']/@xlink:href")
-
+    version = xmlmap.StringField(xpath="@version")
 

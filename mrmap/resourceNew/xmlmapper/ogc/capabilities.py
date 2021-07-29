@@ -493,8 +493,6 @@ class Wms111Service(WmsService):
 
 
 class Wms130Service(WmsService):
-
-
     root_layer = xmlmap.NodeField(xpath=f"{NS_WC}Capability']/{NS_WC}Layer']", node_class=Layer130)
 
 
