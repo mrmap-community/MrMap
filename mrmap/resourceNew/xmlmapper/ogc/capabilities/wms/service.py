@@ -28,6 +28,23 @@ class Layer(DBModelConverterMixin, xmlmap.XmlObject):
     left = 0
     right = 0
 
+    def __dict__(self):
+        return {"scale_min": self.scale_min,
+                "scale_max": self.scale_max,
+                "bbox_lat_lon": Polygon(((self.bbox_min_x, self.bbox_min_y),
+                                         (self.bbox_min_x, self.bbox_max_y),
+                                         (self.bbox_max_x, self.bbox_min_y),
+                                         (self.bbox_max_x, self.bbox_min_y),
+                                         (self.bbox_min_x, self.bbox_min_y))),
+                "identifier": self.identifier,
+                "is_queryable": self.is_queryable,
+                "is_opaque": self.is_opaque,
+                "is_cascaded": self.is_cascaded,
+                "remote_metadata": self.remote_metadata,
+                "reference_systems": self.reference_systems,
+                "metadata": self.layer_metadata,
+                }
+
     def get_descendants(self, include_self=True, level=0):
         global EDGE_COUNTER
         EDGE_COUNTER += 1
@@ -142,7 +159,13 @@ class WmsService(Service):
 
     :attr all_layers: cache to store the layer list, which is computed by the :meth:`~.get_all_layers`
     """
-    all_layers = None
+    all_layers = []
+
+    def __dict__(self):
+        return {"url": self.url.__str__(),
+                "layers": self.get_all_layers(),
+                "operation_urls": self.operation_urls,
+                "metadata": self.service_metadata}
 
     def get_all_layers(self):
         """Return all layers of the wms in pre order.
