@@ -3,6 +3,11 @@ from resourceNew.xmlmapper.mixins import DBModelConverterMixin
 from resourceNew.xmlmapper.namespaces import INSPIRE_VS_NAMESPACE, INSPIRE_COMMON_NAMESPACE, XLINK_NAMESPACE
 
 
+class RemoteMetadata(DBModelConverterMixin, xmlmap.XmlObject):
+    model = 'resourceNew.RemoteMetadata'
+    ROOT_NAME = "MetadataUrl"
+
+
 class Keyword(DBModelConverterMixin, xmlmap.XmlObject):
     model = 'resourceNew.Keyword'
     ROOT_NAME = "Keyword"
