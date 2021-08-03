@@ -1,10 +1,12 @@
 from eulxml import xmlmap
+
+from resourceNew.xmlmapper.mixins import DBModelConverter
 from resourceNew.xmlmapper.namespaces import XLINK_NAMESPACE
 from resourceNew.xmlmapper.ogc.capabilities.metadata import RemoteMetadata
 from resourceNew.xmlmapper.ogc.capabilities.service import ReferenceSystem
-from resourceNew.xmlmapper.ogc.capabilities.wms.service import LegendUrl, Style, Layer, WmsOperationUrlsMixin, \
+from resourceNew.xmlmapper.ogc.capabilities.wms.service import LegendUrlConverter, StyleConverter, LayerConverter, WmsOperationUrlsMixin, \
     WmsGetCapabilitiesUrls, WmsGetMapUrls, WmsGetFeatureInfoUrls, WmsDescribeLayerUrls, WmsGetLegendGraphicUrls, \
-    WmsGetStylesUrls, WmsService
+    WmsGetStylesUrls
 from resourceNew.xmlmapper.ogc.capabilities.wms.b.metadata import Wms110ServiceMetadata, Wms110LayerMetadata
 
 
@@ -17,20 +19,20 @@ class Wms110ReferenceSystem(ReferenceSystem):
     ROOT_NAME = "SRS"
 
 
-class Wms110LegendUrl(LegendUrl):
+class Wms110LegendUrl(LegendUrlConverter):
     legend_url = xmlmap.StringField(xpath="OnlineResource[@xlink:type='simple']/@xlink:href")
     height = xmlmap.IntegerField(xpath="@height")
     width = xmlmap.IntegerField(xpath="@width")
     mime_type = xmlmap.StringField(xpath="Format")
 
 
-class Wms110Style(Style):
+class Wms110Style(StyleConverter):
     name = xmlmap.StringField(xpath="Name")
     title = xmlmap.StringField(xpath="Title")
     legend_url = xmlmap.NodeField(xpath="LegendURL", node_class=Wms110LegendUrl)
 
 
-class Wms110Layer(Layer):
+class Wms110Layer(LayerConverter):
     scale_min = xmlmap.FloatField(xpath="ScaleHint/@min")
     scale_max = xmlmap.FloatField(xpath="ScaleHint/@max")
     bbox_min_x = xmlmap.FloatField(xpath="LatLonBoundingBox/@minx")
@@ -91,7 +93,7 @@ class Wms110OperationUrlsMixin(WmsOperationUrlsMixin):
                                        node_class=Wms110GetStylesUrls)
 
 
-class Wms110Service(Wms110OperationUrlsMixin, WmsService):
+class Wms110Service(Wms110OperationUrlsMixin, DBModelConverter):
     """Abstract service xml mapper class"""
     ROOT_NAMESPACES = dict([("xlink", XLINK_NAMESPACE)])
     ROOT_NAME = "WMT_MS_Capabilities"

@@ -1,11 +1,12 @@
 from eulxml import xmlmap
 from resourceNew.xmlmapper.exceptions import SemanticError
-from resourceNew.xmlmapper.mixins import DBModelConverterMixin
+from resourceNew.xmlmapper.mixins import DBModelConverter
 from resourceNew.xmlmapper.namespaces import INSPIRE_VS_NAMESPACE, XLINK_NAMESPACE
 from resourceNew.xmlmapper.ogc.capabilities.metadata import InspireMetadataUrl
+from resourceNew.models.service import Service
 
 
-class ReferenceSystem(DBModelConverterMixin, xmlmap.XmlObject):
+class ReferenceSystem(DBModelConverter):
     model = "resourceNew.ReferenceSystem"
 
     ref_system = xmlmap.StringField(xpath=".")
@@ -30,7 +31,7 @@ class ReferenceSystem(DBModelConverterMixin, xmlmap.XmlObject):
         return dic
 
 
-class OnlineResource(DBModelConverterMixin, xmlmap.XmlObject):
+class OnlineResource(DBModelConverter):
     ROOT_NAME = "OnlineResource"
     ROOT_NAMESPACES = dict([("xlink", XLINK_NAMESPACE)])
     url = xmlmap.StringField(xpath="@xlink:href")
@@ -47,17 +48,16 @@ class OnlineResource(DBModelConverterMixin, xmlmap.XmlObject):
         return dic
 
 
-class OperationUrl(DBModelConverterMixin, xmlmap.XmlObject):
+class OperationUrl(DBModelConverter):
     model = "resourceNew.OperationUrl"
 
 
-class Service(DBModelConverterMixin, xmlmap.XmlObject):
-    """Abstract service xml mapper class"""
-    model = 'resourceNew.Service'
+class OgcServiceCapabilitiesConverter(DBModelConverter):
+    """Converter service xml mapper class"""
+    model = Service
     ROOT_NAMESPACES = dict([("inspire_vs", INSPIRE_VS_NAMESPACE),
                             ("xlink", XLINK_NAMESPACE)])
     remote_metadata = xmlmap.NodeField(xpath="inspire_vs:ExtendedCapabilities",
                                        node_class=InspireMetadataUrl)
     url = xmlmap.StringField(xpath="Service/OnlineResource[@xlink:type='simple']/@xlink:href")
     version = xmlmap.StringField(xpath="@version")
-

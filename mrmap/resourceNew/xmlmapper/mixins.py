@@ -1,24 +1,56 @@
 from django.apps import apps
-from django.db import models
 from django.core.exceptions import ImproperlyConfigured
 from eulxml import xmlmap
 from lxml.etree import XPathEvalError
 from django.conf import settings
+from django.db import models
+from django.utils import timezone
+from main.models import get_current_owner
+from crum import get_current_user
 
 
-class DBModelConverterMixin:
-    """ Abstract class which implements some generic functions to get the db model class and all relevant field content
-        as dict.
+class DBModelConverter(xmlmap.XmlObject):
+    """Abstract class which implements some generic functions to get the db model class and all relevant field content
+    as dict.
+
+    :attr model: the model where this instance shall be converted to.
+    :type model: can be a str or a concrete type of :class:`models.Model`
+    :attr common_info: some attributes to store common info, e.g. created_at, created_by_user ...
+    :type common_info: dict
+    :attr ignore_fields: a list of fields which shall ignored by the :meth:`~get_field_dict` function.
+    :type ignore_fields: list
     """
     model = None
+    common_info = {}
+    ignore_fields = []
+
+    def get_common_info(self):
+        """Return common info attributes
+
+        .. note::
+           bulk_create will not call the default save() of CommonInfo model. So we need to set the attributes manual. We
+           collect them once.
+
+        :return common_info: the generated common info
+        :rtype common_info: dict
+        """
+        if not self.common_info:
+            now = timezone.now()
+            current_user = get_current_user()
+            self.common_info = {"created_at": now,
+                                "last_modified_at": now,
+                                "last_modified_by": current_user,
+                                "created_by_user": current_user,
+                                "owned_by_org": get_current_owner()}
+        return self.common_info
 
     def get_model_class(self):
-        """ Return the configured model class. If model class is named as string like 'app_label.model_cls_name', the
-            model will be resolved by the given string. If the model class is directly configured by do not lookup by
-            string.
+        """Return the configured model class. If model class is named as string like 'app_label.model_cls_name', the
+        model will be resolved by the given string. If the model class is directly configured by do not lookup by
+        string.
 
-        Returns:
-            self.model (Django Model class)
+        :return self.model: the configured model class
+        :rtype self.model: a subclass of :class:`models.Model`
         """
         if not self.model:
             raise ImproperlyConfigured(f"you need to configure the model attribute on class "
@@ -54,6 +86,8 @@ class DBModelConverterMixin:
         """
         field_dict = {}
         for key in self._fields.keys():
+            if key in self.ignore_fields:
+                break
             try:
                 if not (isinstance(self._fields.get(key), xmlmap.NodeField) or
                         isinstance(self._fields.get(key), xmlmap.NodeListField)):
@@ -68,6 +102,15 @@ class DBModelConverterMixin:
                 settings.ROOT_LOGGER.error(msg=f"error during parsing field: {key} in class {self.__class__.__name__}")
                 settings.ROOT_LOGGER.exception(e, stack_info=True, exc_info=True)
         return field_dict
+
+    def convert_to_model(self, **kwargs):
+        """Converter function to convert the current xml mapper instance to a db model instance."""
+        return self.get_model_class()(**self.get_field_dict(), **self.get_common_info())
+
+    @classmethod
+    def convert_from_model(cls, db_model):
+        """Converter function to convert a db model instance to the current xml mapper instance."""
+        raise NotImplementedError
 
     def update_fields(self, obj: dict):
         """Update/Set all founded fields by the given obj dict.
@@ -131,11 +174,3 @@ class DBModelConverterMixin:
         instance = cls()
         instance.update_fields(obj=initial)
         return instance
-
-
-class DynamicRootNameMixin:
-
-    def __init__(self, *args, root_name=None,  **kwargs):
-        if root_name:
-            self.ROOT_NAME = root_name
-        super().__init__(*args, **kwargs)

@@ -1,86 +1,47 @@
+from collections import OrderedDict
+
 from django.contrib.gis.geos import Polygon
 from eulxml import xmlmap
 
 from main.utils import camel_to_snake
-from resourceNew.xmlmapper.mixins import DBModelConverterMixin
+from resourceNew.xmlmapper.mixins import DBModelConverter
 from resourceNew.xmlmapper.namespaces import XLINK_NAMESPACE
-from resourceNew.xmlmapper.ogc.capabilities.service import OperationUrl, Service
+from resourceNew.xmlmapper.ogc.capabilities.service import OperationUrl, OgcServiceCapabilitiesConverter
+from resourceNew.models.service import Layer
 
 EDGE_COUNTER = 0
 
 
-class LegendUrl(DBModelConverterMixin, xmlmap.XmlObject):
+class LegendUrlConverter(DBModelConverter):
     model = 'resourceNew.LegendUrl'
     ROOT_NAMESPACES = dict([("xlink", XLINK_NAMESPACE)])
     ROOT_NAME = "LegendURL"
 
 
-class Style(DBModelConverterMixin, xmlmap.XmlObject):
+class StyleConverter(DBModelConverter):
     model = 'resourceNew.Style'
     ROOT_NAME = "Style"
 
 
-class Layer(DBModelConverterMixin, xmlmap.XmlObject):
-    model = 'resourceNew.Layer'
+class LayerConverter(DBModelConverter):
+    model = Layer
     ROOT_NAME = "Layer"
-    is_leaf_node = False
-    level = 0
-    left = 0
-    right = 0
+    ignore_fields = ["bbox_min_x", "bbox_max_x", "bbox_min_y", "bbox_max_y"]
 
-    def __dict__(self):
-        return {"scale_min": self.scale_min,
-                "scale_max": self.scale_max,
-                "bbox_lat_lon": Polygon(((self.bbox_min_x, self.bbox_min_y),
+    def convert_to_model(self, **kwargs):
+        """Converter function to convert the current xml mapper instance to a db model instance.
+
+        :return layer: the constructed layer
+        :rtype layer: :class:`resourceNew.Layer`
+        """
+        layer = super().convert_to_model(**kwargs)
+        if self.bbox_min_x and self.bbox_max_x and self.bbox_min_y and self.bbox_max_y:
+            layer.bbox_lat_lon = Polygon(((self.bbox_min_x, self.bbox_min_y),
                                          (self.bbox_min_x, self.bbox_max_y),
                                          (self.bbox_max_x, self.bbox_min_y),
                                          (self.bbox_max_x, self.bbox_min_y),
-                                         (self.bbox_min_x, self.bbox_min_y))),
-                "identifier": self.identifier,
-                "is_queryable": self.is_queryable,
-                "is_opaque": self.is_opaque,
-                "is_cascaded": self.is_cascaded,
-                "remote_metadata": self.remote_metadata,
-                "reference_systems": self.reference_systems,
-                "metadata": self.layer_metadata,
-                }
-
-    def get_descendants(self, include_self=True, level=0):
-        global EDGE_COUNTER
-        EDGE_COUNTER += 1
-        self.left = EDGE_COUNTER
-
-        self.level = level
-
-        descendants = []
-
-        if self.children:
-            level += 1
-            for layer in self.children:
-                descendants.extend(layer.get_descendants(level=level))
-        else:
-            self.is_leaf_node = True
-
-        EDGE_COUNTER += 1
-        self.right = EDGE_COUNTER
-
-        if include_self:
-            descendants.insert(0, self)
-
-        return descendants
-
-    def get_field_dict(self):
-        dic = super().get_field_dict()
-        # there is no default xmlmap field which parses to a geos polygon. So we convert it here.
-        min_x = dic.get('bbox_min_x')
-        max_x = dic.get('bbox_max_x')
-        min_y = dic.get('bbox_min_y')
-        max_y = dic.get('bbox_max_y')
-        del dic['bbox_min_x'], dic['bbox_max_x'], dic['bbox_min_y'], dic['bbox_max_y']
-        if min_x and max_x and min_y and max_y:
-            bbox_lat_lon = Polygon(((min_x, min_y), (min_x, max_y), (max_x, max_y), (max_x, min_y), (min_x, min_y)))
-            dic.update({"bbox_lat_lon": bbox_lat_lon})
-        return dic
+                                         (self.bbox_min_x, self.bbox_min_y)))
+        return layer
 
 
 class WmsOperationUrls(OperationUrl):
@@ -152,30 +113,3 @@ class WmsOperationUrlsMixin:
                 _operation_url.post_url = operation_url["url"]
 
             _operation_url.mime_types.extend(operation_url.get("mime_types", []))
-
-
-class WmsService(Service):
-    """Abstract wms service xml mapper class.
-
-    :attr all_layers: cache to store the layer list, which is computed by the :meth:`~.get_all_layers`
-    """
-    all_layers = []
-
-    def __dict__(self):
-        return {"url": self.url.__str__(),
-                "layers": self.get_all_layers(),
-                "operation_urls": self.operation_urls,
-                "metadata": self.service_metadata}
-
-    def get_all_layers(self):
-        """Return all layers of the wms in pre order.
-
-        .. note::
-           the returned layer list is cached in :attr all_layers:
-
-        :return all_layers: all layers
-        :rtype: list
-        """
-        if not self.all_layers:
-            self.all_layers = self.root_layer.get_descendants()
-        return self.all_layers

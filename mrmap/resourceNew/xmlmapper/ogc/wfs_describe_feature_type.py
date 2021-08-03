@@ -1,10 +1,10 @@
 from eulxml import xmlmap
 
 from resourceNew.xmlmapper.consts import NS_WC
-from resourceNew.xmlmapper.mixins import DBModelConverterMixin
+from resourceNew.xmlmapper.mixins import DBModelConverter
 
 
-class FeatureTypeElement(DBModelConverterMixin, xmlmap.XmlObject):
+class FeatureTypeElement(DBModelConverter):
     model = 'resourceNew.FeatureTypeElement'
     max_occurs = xmlmap.IntegerField(xpath=f"@maxOccurs")
     min_occurs = xmlmap.IntegerField(xpath=f"@minOccurs")

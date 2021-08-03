@@ -1,11 +1,11 @@
 from eulxml import xmlmap
 from resourceNew.xmlmapper.namespaces import WMS_1_3_0_NAMESPACE
-from resourceNew.xmlmapper.ogc.capabilities.metadata import Keyword, MetadataUrl
+from resourceNew.xmlmapper.ogc.capabilities.metadata import MetadataUrl, KeywordConverter
 from resourceNew.xmlmapper.ogc.capabilities.wms.metadata import WmsServiceMetadataContact, WmsServiceMetadata, \
     WmsLayerMetadata
 
 
-class Wms130Keyword(Keyword):
+class Wms130Keyword(KeywordConverter):
     ROOT_NS = "default"
     ROOT_NAMESPACES = dict([("default", WMS_1_3_0_NAMESPACE)])
 
@@ -40,7 +40,7 @@ class Wms130ServiceMetadata(WmsServiceMetadata):
     ROOT_NAMESPACES = dict([("default", WMS_1_3_0_NAMESPACE)])
     service_contact = xmlmap.NodeField(xpath="default:ContactInformation",
                                        node_class=Wms130ServiceMetadataContact)
-    keywords = xmlmap.NodeListField(xpath="default:KeywordList/default:Keyword", node_class=Keyword)
+    keywords = xmlmap.NodeListField(xpath="default:KeywordList/default:Keyword", node_class=Wms130Keyword)
 
 
 class Wms130LayerMetadata(WmsLayerMetadata):
@@ -48,8 +48,3 @@ class Wms130LayerMetadata(WmsLayerMetadata):
     ROOT_NAMESPACES = dict([("default", WMS_1_3_0_NAMESPACE)])
     title = xmlmap.StringField(xpath="default:Title")
     abstract = xmlmap.StringField(xpath="default:Abstract")
-    keywords = xmlmap.NodeListField(xpath="default:KeywordList//default:Keyword", node_class=Wms130Keyword)
-    remote_metadata = xmlmap.NodeListField(xpath="default:MetadataUrl[@type='TC211']", node_class=Wms130MetadataUrl)
-
-
-

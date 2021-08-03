@@ -1,18 +1,13 @@
-import os
-
-from django.conf import settings
 from django.contrib.gis.geos import Polygon
-from django.db import models, transaction
+from django.db import models
 from django.contrib.gis.db import models as gis_models
-from django.db.models import QuerySet, Q
+from django.db.models import QuerySet
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse, NoReverseMatch
 from requests import Session
 from requests.auth import HTTPDigestAuth
-
 from MrMap.icons import get_icon, IconEnum
-from job.models import Job
 from main.models import GenericModelMixin, CommonInfo
 from main.utils import camel_to_snake
 from resourceNew.enums.service import OGCServiceEnum, OGCServiceVersionEnum, HttpMethodEnum, OGCOperationEnum, \
@@ -22,7 +17,6 @@ from resourceNew.managers.service import ServiceXmlManager, ServiceManager, Laye
     FeatureTypeManager, FeatureTypeElementManager
 from mptt.models import MPTTModel, TreeForeignKey
 from uuid import uuid4
-
 from resourceNew.models.document import CapabilitiesDocumentModelMixin
 from resourceNew.ows_client.request_builder import OgcService
 from resourceNew.xmlmapper.ogc.wfs_describe_feature_type import DescribedFeatureType as XmlDescribedFeatureType

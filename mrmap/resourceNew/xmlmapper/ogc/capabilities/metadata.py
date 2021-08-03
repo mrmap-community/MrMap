@@ -1,24 +1,26 @@
 from eulxml import xmlmap
-from resourceNew.xmlmapper.mixins import DBModelConverterMixin
+
+from resourceNew.models import Keyword
+from resourceNew.xmlmapper.mixins import DBModelConverter
 from resourceNew.xmlmapper.namespaces import INSPIRE_VS_NAMESPACE, INSPIRE_COMMON_NAMESPACE, XLINK_NAMESPACE
 
 
-class RemoteMetadata(DBModelConverterMixin, xmlmap.XmlObject):
+class RemoteMetadata(DBModelConverter):
     model = 'resourceNew.RemoteMetadata'
     ROOT_NAME = "MetadataUrl"
 
 
-class Keyword(DBModelConverterMixin, xmlmap.XmlObject):
-    model = 'resourceNew.Keyword'
+class KeywordConverter(DBModelConverter):
+    model = Keyword
     ROOT_NAME = "Keyword"
 
     keyword = xmlmap.StringField(xpath=".")
 
     def __str__(self):
-        return str(self.keyword)
+        return self.keyword.__str__()
 
 
-class InspireMetadataUrl(DBModelConverterMixin, xmlmap.XmlObject):
+class InspireMetadataUrl(DBModelConverter):
     ROOT_NAME = "ExtendedCapabilities"
     ROOT_NS = "inspire_vs"
     ROOT_NAMESPACES = dict([("inspire_vs", INSPIRE_VS_NAMESPACE),
@@ -30,11 +32,11 @@ class InspireMetadataUrl(DBModelConverterMixin, xmlmap.XmlObject):
     response_language = xmlmap.StringField(xpath="inspire_common:ResponseLanguage/inspire_common:Language")
 
 
-class ServiceMetadataContact(DBModelConverterMixin, xmlmap.XmlObject):
+class ServiceMetadataContact(DBModelConverter):
     model = 'resourceNew.MetadataContact'
 
 
-class ServiceMetadata(DBModelConverterMixin, xmlmap.XmlObject):
+class OgcServiceMetadataConverter(DBModelConverter):
     model = 'resourceNew.ServiceMetadata'
     ROOT_NAME = "Service"
 
@@ -44,7 +46,7 @@ class ServiceMetadata(DBModelConverterMixin, xmlmap.XmlObject):
     access_constraints = xmlmap.StringField(xpath="AccessConstraints")
 
 
-class MetadataUrl(DBModelConverterMixin, xmlmap.XmlObject):
+class MetadataUrl(DBModelConverter):
     model = 'resourceNew.RemoteMetadata'
     ROOT_NAMESPACES = dict([("xlink", XLINK_NAMESPACE)])
     ROOT_NAME = "MetadataUrl"

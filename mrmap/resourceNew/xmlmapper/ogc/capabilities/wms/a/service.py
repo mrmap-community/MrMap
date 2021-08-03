@@ -1,9 +1,9 @@
 from eulxml import xmlmap
 from resourceNew.xmlmapper.namespaces import XLINK_NAMESPACE
 from resourceNew.xmlmapper.ogc.capabilities.service import ReferenceSystem
-from resourceNew.xmlmapper.ogc.capabilities.wms.service import LegendUrl, Style, Layer, \
+from resourceNew.xmlmapper.ogc.capabilities.wms.service import LegendUrlConverter, StyleConverter, LayerConverter, \
     WmsOperationUrlsMixin, WmsGetCapabilitiesUrls, WmsGetMapUrls, WmsGetFeatureInfoUrls, WmsDescribeLayerUrls, \
-    WmsGetLegendGraphicUrls, WmsGetStylesUrls, WmsService
+    WmsGetLegendGraphicUrls, WmsGetStylesUrls, WmsCapabilitiesConverter
 from resourceNew.xmlmapper.ogc.capabilities.wms.a.metadata import Wms100ServiceMetadata, Wms100LayerMetadata
 
 
@@ -11,20 +11,20 @@ class Wms100ReferenceSystem(ReferenceSystem):
     ROOT_NAME = "SRS"
 
 
-class Wms100LegendUrl(LegendUrl):
+class Wms100LegendUrl(LegendUrlConverter):
     legend_url = xmlmap.StringField(xpath="OnlineResource[@xlink:type='simple']/@xlink:href")
     height = xmlmap.IntegerField(xpath="@height")
     width = xmlmap.IntegerField(xpath="@width")
     mime_type = xmlmap.StringField(xpath="Format")
 
 
-class Wms100Style(Style):
+class Wms100Style(StyleConverter):
     name = xmlmap.StringField(xpath="Name")
     title = xmlmap.StringField(xpath="Title")
     legend_url = xmlmap.NodeField(xpath="LegendURL", node_class=Wms100LegendUrl)
 
 
-class Wms100Layer(Layer):
+class Wms100Layer(LayerConverter):
     """xml mapper class for wms layer information for service version >= 1.0.0 and < 1.1.1"""
     scale_min = xmlmap.FloatField(xpath="ScaleHint/@min")
     scale_max = xmlmap.FloatField(xpath="ScaleHint/@max")
@@ -97,7 +97,7 @@ class Wms100OperationUrlsMixin(WmsOperationUrlsMixin):
                                        node_class=Wms100GetStylesUrls)
 
 
-class Wms100Service(Wms100OperationUrlsMixin, WmsService):
+class Wms100Service(Wms100OperationUrlsMixin, WmsCapabilitiesConverter):
     """Abstract service xml mapper class"""
     ROOT_NAMESPACES = dict([("xlink", XLINK_NAMESPACE)])
     ROOT_NAME = "WMT_MS_Capabilities"

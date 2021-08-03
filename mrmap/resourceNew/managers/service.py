@@ -303,7 +303,6 @@ class ServiceXmlManager(models.Manager):
                                             db_layer=db_layer)
             self._construct_dimension_instances(parsed_layer=parsed_layer,
                                                 db_layer=db_layer)
-
             self._create_reference_system_instances(parsed_sub_element=parsed_layer,
                                                     db_sub_element=db_layer)
         return tree_id

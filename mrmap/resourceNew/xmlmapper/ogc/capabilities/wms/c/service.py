@@ -2,11 +2,12 @@ from eulxml import xmlmap
 
 from resourceNew.xmlmapper.namespaces import XLINK_NAMESPACE, INSPIRE_VS_NAMESPACE, WMS_1_3_0_NAMESPACE
 from resourceNew.xmlmapper.ogc.capabilities.metadata import RemoteMetadata
-from resourceNew.xmlmapper.ogc.capabilities.service import ReferenceSystem
-from resourceNew.xmlmapper.ogc.capabilities.wms.service import LegendUrl, Style, Layer, WmsGetCapabilitiesUrls, \
+from resourceNew.xmlmapper.ogc.capabilities.service import ReferenceSystem, OgcServiceCapabilitiesConverter
+from resourceNew.xmlmapper.ogc.capabilities.wms.service import LegendUrlConverter, StyleConverter, LayerConverter, WmsGetCapabilitiesUrls, \
     WmsGetMapUrls, WmsGetFeatureInfoUrls, WmsDescribeLayerUrls, WmsGetLegendGraphicUrls, WmsGetStylesUrls, \
-    WmsOperationUrlsMixin, WmsService
-from resourceNew.xmlmapper.ogc.capabilities.wms.c.metadata import Wms130ServiceMetadata, Wms130LayerMetadata
+    WmsOperationUrlsMixin
+from resourceNew.xmlmapper.ogc.capabilities.wms.c.metadata import Wms130ServiceMetadata, Wms130LayerMetadata, \
+    Wms130Keyword
 
 
 class Wms130RemoteMetadata(RemoteMetadata):
@@ -23,7 +24,7 @@ class Wms130ReferenceSystem(ReferenceSystem):
     ROOT_NAMESPACES = dict([("default", WMS_1_3_0_NAMESPACE)])
 
 
-class Wms130LegendUrl(LegendUrl):
+class Wms130LegendUrl(LegendUrlConverter):
     ROOT_NS = "default"
     ROOT_NAMESPACES = dict([("default", WMS_1_3_0_NAMESPACE)])
 
@@ -33,7 +34,7 @@ class Wms130LegendUrl(LegendUrl):
     mime_type = xmlmap.StringField(xpath="default:Format")
 
 
-class Wms130Style(Style):
+class Wms130Style(StyleConverter):
     ROOT_NS = "default"
     ROOT_NAMESPACES = dict([("default", WMS_1_3_0_NAMESPACE)])
 
@@ -42,7 +43,7 @@ class Wms130Style(Style):
     legend_url = xmlmap.NodeField(xpath="LegendURL", node_class=Wms130LegendUrl)
 
 
-class Wms130Layer(Layer):
+class Wms130LayerConverter(LayerConverter):
     ROOT_NS = "default"
     ROOT_NAMESPACES = dict([("default", WMS_1_3_0_NAMESPACE)])
 
@@ -64,6 +65,7 @@ class Wms130Layer(Layer):
     parent = xmlmap.NodeField(xpath="../../default:Layer", node_class="self")
     children = xmlmap.NodeListField(xpath="default:Layer", node_class="self")
     layer_metadata = xmlmap.NodeField(xpath=".", node_class=Wms130LayerMetadata)
+    keywords = xmlmap.NodeListField(xpath="default:KeywordList/default:Keyword", node_class=Wms130Keyword)
 
 
 class Wms130GetCapabilitiesUrls(WmsGetCapabilitiesUrls):
@@ -114,15 +116,27 @@ class Wms130OperationUrlsMixin(WmsOperationUrlsMixin):
                                        node_class=Wms130GetStylesUrls)
 
 
-class Wms130Service(Wms130OperationUrlsMixin, WmsService):
-    """Abstract service xml mapper class"""
+class Wms130CapabilitiesConverter(Wms130OperationUrlsMixin, OgcServiceCapabilitiesConverter):
+    """Converter service xml mapper class"""
     ROOT_NS = "default"
     ROOT_NAME = "WMS_Capabilities"
     ROOT_NAMESPACES = dict([("default", WMS_1_3_0_NAMESPACE),
                             ("inspire_vs", INSPIRE_VS_NAMESPACE),
                             ("xlink", XLINK_NAMESPACE)])
     XSD_SCHEMA = "http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd"
-
+    ignore_fields = ["version"]
     url = xmlmap.StringField(xpath="default:Service/default:OnlineResource[@xlink:type='simple']/@xlink:href")
     service_metadata = xmlmap.NodeField(xpath="default:Service", node_class=Wms130ServiceMetadata)
-    root_layer = xmlmap.NodeField(xpath="default:Capability/default:Layer", node_class=Wms130Layer)
+    root_layer = xmlmap.NodeField(xpath="default:Capability/default:Layer", node_class=Wms130LayerConverter)
+
+
+
+def test():
+
+    file = "ejkfbjkaf.xml"
+    xmlobject = xmlmap.load_xmlobject_from_file(filename=file, xmlclass=Wms130CapabilitiesConverter)
+    xmlobject.url
+    xmlobject.root_layer
+
+    capabalities = Wms130CapabilitiesConverter()
+

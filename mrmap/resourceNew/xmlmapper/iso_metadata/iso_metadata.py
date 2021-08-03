@@ -3,13 +3,13 @@ from django.contrib.gis.geos import MultiPolygon
 from eulxml import xmlmap
 
 from resourceNew.xmlmapper.gml.gml import Gml
-from resourceNew.xmlmapper.mixins import DBModelConverterMixin
+from resourceNew.xmlmapper.mixins import DBModelConverter
 import urllib
 
 from resourceNew.xmlmapper.namespaces import GMD_NAMESPACE, GCO_NAMESPACE, SRV_NAMESPACE, GML_3_1_1_NAMESPACE
 
 
-class Keyword(DBModelConverterMixin, xmlmap.XmlObject):
+class Keyword(DBModelConverter):
     model = "resourceNew.Keyword"
     ROOT_NS = "gmd"
     ROOT_NAME = "keyword"
@@ -19,14 +19,14 @@ class Keyword(DBModelConverterMixin, xmlmap.XmlObject):
     keyword = xmlmap.StringField(xpath="gco:CharacterString")
 
 
-class Category(DBModelConverterMixin, xmlmap.XmlObject):
+class Category(DBModelConverter):
     model = "resourceNew.Category"
     # todo:
 
     category = xmlmap.StringField(xpath=".")
 
 
-class Dimension(DBModelConverterMixin, xmlmap.XmlObject):
+class Dimension(DBModelConverter):
     ROOT_NS = "gmd"
     ROOT_NAME = "extent"
     ROOT_NAMESPACES = dict([("gmd", GMD_NAMESPACE),
@@ -77,7 +77,7 @@ class EXBoundingPolygon(xmlmap.XmlObject):
         return geometries
 
 
-class ReferenceSystem(DBModelConverterMixin, xmlmap.XmlObject):
+class ReferenceSystem(DBModelConverter):
     model = "resourceNew.ReferenceSystem"
     ROOT_NAMESPACES = dict([("gmd", GMD_NAMESPACE),
                             ("gco", GCO_NAMESPACE)])
@@ -98,7 +98,7 @@ class ReferenceSystem(DBModelConverterMixin, xmlmap.XmlObject):
         return field_dict
 
 
-class CiResponsibleParty(DBModelConverterMixin, xmlmap.XmlObject):
+class CiResponsibleParty(DBModelConverter):
     model = "resourceNew.MetadataContact"
     ROOT_NAME = "CI_ResponsibleParty"
     ROOT_NS = "gmd"
@@ -110,7 +110,7 @@ class CiResponsibleParty(DBModelConverterMixin, xmlmap.XmlObject):
     email = xmlmap.StringField(xpath="gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString")
 
 
-class BaseIsoMetadata(DBModelConverterMixin, xmlmap.XmlObject):
+class BaseIsoMetadata(DBModelConverter):
     """Base ISO Metadata class with namespace declaration common to all ISO Metadata
     XmlObjects.
 

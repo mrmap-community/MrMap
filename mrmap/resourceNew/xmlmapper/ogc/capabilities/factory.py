@@ -3,7 +3,7 @@ from eulxml import xmlmap
 from resourceNew.enums.service import OGCServiceEnum, OGCServiceVersionEnum
 from resourceNew.xmlmapper.namespaces import NS_WC
 from resourceNew.xmlmapper.ogc.capabilities.wms.b.service import Wms110Service
-from resourceNew.xmlmapper.ogc.capabilities.wms.c.service import Wms130Service
+from resourceNew.xmlmapper.ogc.capabilities.wms.c.service import Wms130CapabilitiesConverter
 
 
 class ServiceType(xmlmap.XmlObject):
@@ -54,7 +54,7 @@ def WebService(xml):
         if service_type.is_version(OGCServiceVersionEnum.V_1_1_0):
             xml_class = Wms110Service
         elif service_type.is_version(OGCServiceVersionEnum.V_1_3_0):
-            xml_class = Wms130Service
+            xml_class = Wms130CapabilitiesConverter
     elif service_type.is_service_type(OGCServiceEnum.WFS):
         pass
     elif service_type.is_service_type(OGCServiceEnum.CSW):
