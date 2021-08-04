@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
+from collections import OrderedDict
 
-from resourceNew.models import Service, Keyword
+from resourceNew.models import Service, Keyword, ServiceMetadata, ReferenceSystem
 from resourceNew.xmlmapper.ogc.capabilities.wms.c.service import Wms130CapabilitiesConverter
 
 
@@ -11,7 +12,11 @@ class OgcServiceBuilder(ABC):
 
     @property
     @abstractmethod
-    def service(self) -> None:
+    def transient_objects(self) -> None:
+        pass
+
+    @abstractmethod
+    def produce_service(self) -> None:
         pass
 
     @abstractmethod
@@ -20,6 +25,10 @@ class OgcServiceBuilder(ABC):
 
     @abstractmethod
     def produce_keywords(self) -> None:
+        pass
+
+    @abstractmethod
+    def produce_reference_systems(self) -> None:
         pass
 
 
@@ -41,8 +50,12 @@ class Wms130Builder(WmsServiceBuilder):
     """The Concrete Builder classes follow the Builder interface and provide
     specific implementations of the building steps.
     """
+    _keywords = None
+    _reference_systems = None
     _service = None
     _service_metadata = None
+    _layers = None
+    _m2m_relations = None
 
     def __init__(self, base_service: Wms130CapabilitiesConverter) -> None:
         """A fresh builder instance should contain a blank service object, which is
@@ -56,56 +69,48 @@ class Wms130Builder(WmsServiceBuilder):
         self._service_metadata = None
 
     @property
-    def service(self) -> Service:
-        """
-        Concrete Builders are supposed to provide their own methods for
-        retrieving results. That's because various types of builders may create
-        entirely different products that don't follow the same interface.
-        Therefore, such methods cannot be declared in the base Builder interface
-        (at least in a statically typed programming language).
+    def transient_objects(self) -> OrderedDict:
+        transient_objects = OrderedDict()
+        transient_objects["keywords"] = self._keywords
+        transient_objects["reference_systems"] = self._reference_systems
+        transient_objects["service"] = self._service
+        transient_objects["service_metadata"] = self._service_metadata
+        transient_objects["layers"] = self._layers
+        transient_objects["m2m_relations"] = self._m2m_relations
+        return transient_objects
 
-        Usually, after returning the end result to the client, a builder
-        instance is expected to be ready to start producing another product.
-        That's why it's a usual practice to call the reset method at the end of
-        the `getProduct` method body. However, this behavior is not mandatory,
-        and you can make your builders wait for an explicit reset call from the
-        client code before disposing of the previous result.
-        """
-        service = self._service
-        self.reset()
-        return service
+    def produce_service(self) -> None:
+        """Convert the service object to model instance."""
+        self._service = {"model": Service,
+                         "objects": self._base_service.convert_to_model(),
+                         "save_operation": "create"}
 
     def produce_service_metadata(self) -> None:
-        """Convert the service_metadata object to model instance and persist it to the database."""
-        self._service_metadata = self._base_service.service_metadata.convert_to_model()
-        self._service_metadata.described_object = self._service
-        self._service_metadata.save()
+        """Convert the service_metadata object to model instance."""
+        _service_metadata = self._base_service.service_metadata.convert_to_model()
+        _service_metadata.described_object = self._service
+        self._service_metadata = {"model": ServiceMetadata,
+                                  "objects": self._service_metadata,
+                                  "save_operation": "create"}
 
     def produce_keywords(self) -> None:
-        """Collect and covert all keywords and its pointing objects, persists all keywords in first step, link the
-        persisted keywords in second step.
-
-        complex_object = [(Keyword, [kw1, kw2, kw3]), (Service, [service1]), (ServiceMetadata, [service_md1.keywords.add(*[kw1, kw2])])]
-
-        _keywords = {"kw1": kw1,
-                     "kw2": kw2,
-                     "kw3": kw3,
-                     ...}
-        _pointing_objects = [(obj1, ["kw1", "kw2"]), (obj2, ["kw2"]), (obj3, ["kw1", "kw3"])]
-
-        """
+        """Covert all keywords of all possible objects"""
         _keywords = {}
-        _pointing_object_keywords = []
-        _pointing_objects = []
+        _service_metadata_keyword_pks = []
         for keyword in self._base_service.service_metadata.keywords:
-            if not keyword.__str__() in _keywords:
+            if not keyword.__str__() in self._keywords:
                 _keywords.update({keyword.__str__(): keyword})
-            _pointing_object_keywords.append(_keywords.get(keyword.__str__()))
-        _pointing_objects.append((self._service_metadata, _pointing_object_keywords))
+            _service_metadata_keyword_pks.append(keyword.__str__())
 
-        for kw in _keywords.items():
-            _kw = Keyword.objects.get_or_create(keyword=kw.keyword)
-            # todo: change kw in _keywords
+        self._m2m_relations.append({"object": self._service_metadata,
+                                    "field_name": "keywords",
+                                    "query_set": Keyword.objects.filter(pk__in=_service_metadata_keyword_pks)})
 
-        for pointing_object, keywords in _pointing_objects:
-            pointing_object.keywords.add(*[_keywords.get(kw)] for kw in keywords)
+        self._keywords = {"model": Keyword,
+                          "objects": _keywords.items(),
+                          "save_operation": "get_or_create"}
+
+    def produce_reference_systems(self) -> None:
+        """Convert all reference systems of all possible objects"""
+        _reference_systems = {}
+
