@@ -1,7 +1,9 @@
-from resourceNew.xmlmapper.builder import WmsServiceBuilder
+from django.db import transaction
+
+from resourceNew.xmlmapper.builder import WmsBuilder
 
 
-class WmsServiceDirector:
+class WmsDirector:
     """
     The Director is only responsible for executing the building steps in a
     particular sequence. It is helpful when producing products according to a
@@ -13,11 +15,11 @@ class WmsServiceDirector:
         self._builder = None
 
     @property
-    def builder(self) -> WmsServiceBuilder:
+    def builder(self) -> WmsBuilder:
         return self._builder
 
     @builder.setter
-    def builder(self, builder: WmsServiceBuilder) -> None:
+    def builder(self, builder: WmsBuilder) -> None:
         """
         The Director works with any builder instance that the client code passes
         to it. This way, the client code may alter the final type of the newly
@@ -30,8 +32,19 @@ class WmsServiceDirector:
     building steps.
     """
 
-    def build_db_service(self) -> None:
-        self.builder.produce_service()
-        self.builder.produce_service_metadata()
-        self.builder.produce_layer_tree()
-        self.builder.produce_layer_metadata()
+    def build_service(self) -> None:
+        with transaction.atomic():
+            # build service tree
+            self.builder.produce_service()
+            self.builder.produce_service_metadata()
+            self.builder.construct_layer_tree()
+            self.builder.produce_layers()
+            self.builder.produce_layer_metadata()
+            self.builder.produce_remote_metadata()
+
+            # produce m2m pointed objects
+            self.builder.produce_keywords()
+            self.builder.produce_reference_systems()
+
+            # produce m2m relations
+            self.builder.produce_m2m_relations()

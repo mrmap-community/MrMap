@@ -449,6 +449,7 @@ class FeatureType(ServiceElement):
                                                         "element is not specified, then all the result formats "
                                                         "listed for the GetFeature operation are assumed to be "
                                                         "supported. "))
+    # todo: shall be a FileField
     describe_feature_type_document = models.TextField(null=True,
                                                       verbose_name=_("describe feature type"),
                                                       help_text=_("the fetched content of the download describe feature"

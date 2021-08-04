@@ -25,6 +25,7 @@ class InspireMetadataUrl(DBModelConverter):
     ROOT_NS = "inspire_vs"
     ROOT_NAMESPACES = dict([("inspire_vs", INSPIRE_VS_NAMESPACE),
                             ("inspire_common", INSPIRE_COMMON_NAMESPACE)])
+    model = RemoteMetadata
 
     link = xmlmap.StringField(xpath="inspire_common:MetadataUrl/inspire_common:URL")
     media_type = xmlmap.StringField(xpath="inspire_common:MetadataUrl/inspire_common:MediaType")
