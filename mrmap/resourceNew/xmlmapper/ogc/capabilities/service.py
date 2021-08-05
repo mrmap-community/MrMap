@@ -51,6 +51,13 @@ class OnlineResource(DBModelConverter):
 class OperationUrl(DBModelConverter):
     model = "resourceNew.OperationUrl"
 
+    def convert_to_model(self, **kwargs):
+        instance = super().convert_to_model()
+        instance.method = self.method
+        instance.operation = self.operation
+        instance.url = self.url
+        return instance
+
 
 class OgcServiceCapabilitiesConverter(DBModelConverter):
     """Converter service xml mapper class"""

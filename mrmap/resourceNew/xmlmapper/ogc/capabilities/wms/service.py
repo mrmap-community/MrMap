@@ -83,15 +83,19 @@ class WmsOperationUrlsMixin:
             if isinstance(self._fields.get(key), xmlmap.NodeField) and "_urls" in key:
                 operation_url = getattr(self, key)
                 if operation_url and operation_url.get_url:
-                    _operation_urls.append({"method": "Get",
-                                            "operation": operation_url.ROOT_NAME,
-                                            "url": operation_url.get_url,
-                                            "mime_types": list(operation_url.mime_types)})
+                    operation_url = OperationUrl()
+                    operation_url.method = "Get"
+                    operation_url.operation = operation_url.ROOT_NAME
+                    operation_url.url = operation_url.get_url
+                    operation_url.mime_types = list(operation_url.mime_types)
+                    _operation_urls.append(operation_url)
                 if operation_url and operation_url.post_url:
-                    _operation_urls.append({"method": "Post",
-                                            "operation": operation_url.ROOT_NAME,
-                                            "url": operation_url.post_url,
-                                            "mime_types": list(operation_url.mime_types)})
+                    operation_url = OperationUrl()
+                    operation_url.method = "Post"
+                    operation_url.operation = operation_url.ROOT_NAME
+                    operation_url.url = operation_url.post_url
+                    operation_url.mime_types = list(operation_url.mime_types)
+                    _operation_urls.append(operation_url)
         return _operation_urls
 
     @operation_urls.setter
