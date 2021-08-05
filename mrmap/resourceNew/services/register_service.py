@@ -1,22 +1,41 @@
-from requests import Session, Request
-
-from MrMap.settings import PROXIES
+import time
 from resourceNew.builder.db_wms_service import WmsDbBuilder, WmsDbDirector
-from resourceNew.ows_client.request_builder import WebService
+from resourceNew.xmlmapper.ogc.capabilities.factory import OgcServiceXml
+from requests import Session, Request
+from django.conf import settings
 
 
-def register_service_from_remote(request: Request):
-    session = Session()
-    session.proxies = PROXIES
-    response = session.send(request.prepare())
+class RegisterOgcServiceService:
 
-    parsed_service = WebService(xml=response.content)
+    @classmethod
+    def register_service_from_remote(cls, request: Request):
+        session = Session()
+        session.proxies = settings.PROXIES
 
-    builder = WmsDbBuilder(proto_service=parsed_service)
-    director = WmsDbDirector()
-    director.builder = builder
+        time_start = time.time()
+        response = session.send(request.prepare())
 
-    director.build_service()
+        settings.ROOT_LOGGER.debug(f"request took {time_start-time.time()}ms")
 
-    db_service = builder.service
-    
+        time_start = time.time()
+        proto_service = OgcServiceXml(xml=response.content)
+        settings.ROOT_LOGGER.debug(f"parsing xml took {time_start-time.time()}ms")
+
+        # todo: handle different service types
+        return cls._build_wms_service(proto_service=proto_service)
+
+    @classmethod
+    def _build_wms_service(cls, proto_service):
+        builder = WmsDbBuilder(proto_service=proto_service)
+        director = WmsDbDirector()
+        director.builder = builder
+
+        time_start = time.time()
+        director.build_service()
+        settings.ROOT_LOGGER.debug(f"build service took {time_start-time.time()}ms")
+
+        time_start = time.time()
+        db_service = builder.service
+        settings.ROOT_LOGGER.debug(f"fetching service took {time_start-time.time()}ms")
+
+        return db_service

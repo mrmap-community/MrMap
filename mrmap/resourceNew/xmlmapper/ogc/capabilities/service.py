@@ -30,6 +30,9 @@ class ReferenceSystem(DBModelConverter):
         del dic["ref_system"]
         return dic
 
+    def convert_to_model(self, **kwargs):
+        return self.get_model_class()(**self.get_field_dict())
+
 
 class OnlineResource(DBModelConverter):
     ROOT_NAME = "OnlineResource"

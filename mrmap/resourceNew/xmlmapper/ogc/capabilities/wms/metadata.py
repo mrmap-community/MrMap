@@ -5,6 +5,9 @@ from resourceNew.xmlmapper.ogc.capabilities.metadata import ServiceMetadataConta
 class WmsServiceMetadataContact(ServiceMetadataContact):
     ROOT_NAME = "ContactInformation"
 
+    def convert_to_model(self, **kwargs):
+        return self.get_model_class()(**self.get_field_dict())
+
 
 class WmsServiceMetadata(OgcServiceMetadataConverter):
     ROOT_NAME = "Service"

@@ -33,7 +33,7 @@ class ServiceType(xmlmap.XmlObject):
         return False
 
 
-def WebService(xml):
+def OgcServiceXml(xml):
     """Factory function to deserialize given xml documents with the right xmlmapper and return it as xmlmap.XmlObject.
 
     :param xml: the xml as string | bytes | Path

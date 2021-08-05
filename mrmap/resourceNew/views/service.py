@@ -12,7 +12,7 @@ from resourceNew.enums.service import OGCServiceEnum
 from resourceNew.filtersets.service import LayerFilterSet, FeatureTypeFilterSet, FeatureTypeElementFilterSet, \
     ServiceFilterSet
 from resourceNew.forms.service import RegisterServiceForm, ServiceModelForm, LayerModelForm
-from resourceNew.models import Service, Layer, FeatureType, FeatureTypeElement
+from resourceNew.models import Service, Layer, FeatureType, FeatureTypeElement, WfsService, WmsService
 from django.urls import reverse_lazy
 from django_filters.views import FilterView
 from django.utils.translation import gettext
@@ -20,29 +20,19 @@ from resourceNew.tables.service import ServiceTable, LayerTable, FeatureTypeTabl
 
 
 class WmsListView(SecuredListMixin, FilterView):
-    model = Service
+    model = WmsService
     table_class = ServiceTable
     filterset_class = ServiceFilterSet
     title = get_icon(IconEnum.WMS) + gettext(" Web Map Services")
-    queryset = model.objects.for_table_view(service_type__name=OGCServiceEnum.WMS)
-
-    def get_table_kwargs(self):
-        return {
-            'exclude': ('feature_types_count',)
-        }
+    queryset = model.objects.for_table_view()
 
 
 class WfsListView(SecuredListMixin, FilterView):
-    model = Service
+    model = WfsService
     table_class = ServiceTable
     filterset_class = ServiceFilterSet
     title = get_icon(IconEnum.WFS) + gettext(" Web Feature Services")
-    queryset = model.objects.for_table_view(service_type__name=OGCServiceEnum.WFS)
-
-    def get_table_kwargs(self):
-        return {
-            'exclude': ('layers_count',)
-        }
+    queryset = model.objects.for_table_view()
 
 
 class LayerListView(SecuredListMixin, FilterView):
@@ -76,9 +66,9 @@ class ServiceXmlView(SecuredDetailView):
 
 
 class ServiceWmsTreeView(SecuredDetailView):
-    model = Service
+    model = WmsService
     template_name = 'resourceNew/service/views/wms_tree.html'
-    queryset = Service.objects.for_tree_view(OGCServiceEnum.WMS)
+    queryset = WmsService.objects.for_tree_view()
     extra_context = {'tree_style': True}
 
     def get_context_data(self, **kwargs):
@@ -102,9 +92,9 @@ class ServiceWmsTreeView(SecuredDetailView):
 
 
 class ServiceWfsTreeView(SecuredDetailView):
-    model = Service
+    model = WfsService
     template_name = 'resourceNew/service/views/wfs_tree.html'
-    queryset = Service.objects.for_tree_view(OGCServiceEnum.WFS)
+    queryset = WfsService.objects.for_tree_view()
     extra_context = {'tree_style': True}
 
     def get_context_data(self, **kwargs):
@@ -122,7 +112,6 @@ class ServiceWfsTreeView(SecuredDetailView):
 
 
 class RegisterServiceFormView(SecuredFormView):
-    model = Service
     action = "add"
     form_class = RegisterServiceForm
     template_name = 'MrMap/detail_views/generic_form.html'
@@ -199,7 +188,7 @@ class CswListView(SecuredListMixin, FilterView):
     table_class = ServiceTable
     filterset_class = ServiceFilterSet
     title = get_icon(IconEnum.CSW) + gettext(" Catalogue Web Service")
-    queryset = model.objects.for_table_view(service_type__name=OGCServiceEnum.CSW)
+    #queryset = model.objects.for_table_view(service_type__name=OGCServiceEnum.CSW)
 
     def get_table_kwargs(self):
         return {

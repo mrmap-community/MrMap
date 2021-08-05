@@ -19,6 +19,9 @@ class KeywordConverter(DBModelConverter):
     def __str__(self):
         return self.keyword.__str__()
 
+    def convert_to_model(self, **kwargs):
+        return self.get_model_class()(**self.get_field_dict())
+
 
 class InspireMetadataUrl(DBModelConverter):
     ROOT_NAME = "ExtendedCapabilities"

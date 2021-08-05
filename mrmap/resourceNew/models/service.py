@@ -7,14 +7,12 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse, NoReverseMatch
 from requests import Session
 from requests.auth import HTTPDigestAuth
-from MrMap.icons import get_icon, IconEnum
 from main.models import GenericModelMixin, CommonInfo
-from main.utils import camel_to_snake
-from resourceNew.enums.service import OGCServiceEnum, OGCServiceVersionEnum, HttpMethodEnum, OGCOperationEnum, \
+from resourceNew.enums.service import OGCServiceVersionEnum, HttpMethodEnum, OGCOperationEnum, \
     AuthTypeEnum
-from resourceNew.managers.security import ServiceSecurityManager, OperationUrlManager
-from resourceNew.managers.service import ServiceXmlManager, ServiceManager, LayerManager, FeatureTypeElementXmlManager, \
-    FeatureTypeManager, FeatureTypeElementManager
+from resourceNew.managers.security import OperationUrlManager
+from resourceNew.managers.service import LayerManager, FeatureTypeElementXmlManager, \
+    FeatureTypeManager, FeatureTypeElementManager, WmsManager, WfsManager
 from mptt.models import MPTTModel, TreeForeignKey
 from uuid import uuid4
 from resourceNew.models.document import CapabilitiesDocumentModelMixin
@@ -22,31 +20,6 @@ from resourceNew.ows_client.request_builder import OgcService
 from resourceNew.xmlmapper.ogc.wfs_describe_feature_type import DescribedFeatureType as XmlDescribedFeatureType
 from eulxml import xmlmap
 from django.conf import settings
-
-
-class ServiceType(models.Model):
-    """ Concrete model class to store different service types such as wms 1.1.1, csw 2.0.2... """
-    name = models.CharField(max_length=10,
-                            choices=OGCServiceEnum.as_choices(),
-                            editable=False,
-                            verbose_name=_("type"),
-                            help_text=_("the concrete type name of the service type."))
-    version = models.CharField(max_length=10,
-                               choices=OGCServiceVersionEnum.as_choices(),
-                               editable=False,
-                               verbose_name=_("version"),
-                               help_text=_("the version of the service type as sem version"))
-    specification = models.URLField(null=True,
-                                    editable=False)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'version'],
-                                    name='%(app_label)s_%(class)s_unique_name_version')
-        ]
-
-    def __str__(self):
-        return self.name
 
 
 class CommonServiceInfo(models.Model):
@@ -64,31 +37,18 @@ class CommonServiceInfo(models.Model):
 
 
 class Service(CapabilitiesDocumentModelMixin, GenericModelMixin, CommonServiceInfo, CommonInfo):
-    """ Light polymorph model class to store all registered services. """
     id = models.UUIDField(primary_key=True,
                           default=uuid4,
                           editable=False)
-    service_type = models.ForeignKey(to=ServiceType,
-                                     on_delete=models.PROTECT,
-                                     editable=False,
-                                     related_name="services",
-                                     related_query_name="service",
-                                     verbose_name=_("service type"),
-                                     help_text=_("the concrete type and version of the service."))
     url = models.URLField(max_length=4096,
                           editable=False,
                           verbose_name=_("url"),
                           help_text=_("the base url of the service"))
-    objects = ServiceManager()
-    security = ServiceSecurityManager()
-    xml_objects = ServiceXmlManager()
-
-    # todo:
-    xml_mapper_cls = None
-
-    class Meta:
-        verbose_name = _("service")
-        verbose_name_plural = _("services")
+    version = models.CharField(max_length=10,
+                               choices=OGCServiceVersionEnum.as_choices(),
+                               editable=False,
+                               verbose_name=_("version"),
+                               help_text=_("the version of the service type as sem version"))
 
     def __str__(self):
         if self.metadata:
@@ -100,34 +60,14 @@ class Service(CapabilitiesDocumentModelMixin, GenericModelMixin, CommonServiceIn
         adding = self._state.adding
         old = None
         if not adding:
-            old = Service.objects.filter(pk=self.pk).first()
+            old = WmsService.objects.filter(pk=self.pk).first()
         super().save(*args, **kwargs)
         if not adding and old and old.is_active != self.is_active:
-            # the active sate of this and all descendant elements shall be changed to the new value. Bulk update
-            # is the most efficient way to do it.
-            if self.is_service_type(OGCServiceEnum.WMS):
-                self.layers.update(is_active=self.is_active)
-            elif self.is_service_type(OGCServiceEnum.WFS):
-                self.featuretypes.update(is_active=self.is_active)
+            self.activate_routine()
 
-    def get_absolute_url(self) -> str:
-        try:
-            return reverse(f'{self._meta.app_label}:{camel_to_snake(self.__class__.__name__)}_{self.service_type_name}_view', args=[self.pk, ])
-        except NoReverseMatch:
-            return ""
-
-    def get_concrete_table_url(self) -> str:
-        try:
-            return reverse(
-                f'{self._meta.app_label}:{camel_to_snake(self.__class__.__name__)}_{self.service_type_name}_list') + f'?id__in={self.pk}'
-        except NoReverseMatch:
-            return ""
-
-    def get_tree_view_url(self) -> str:
-        try:
-            return reverse(f'{self._meta.app_label}:{self.__class__.__name__.lower()}_{self.service_type_name}_tree_view', args=[self.pk])
-        except NoReverseMatch:
-            return ""
+    def activate_routine(self):
+        """hook method to specify concrete activate handling."""
+        pass
 
     def get_activate_url(self) -> str:
         try:
@@ -135,68 +75,59 @@ class Service(CapabilitiesDocumentModelMixin, GenericModelMixin, CommonServiceIn
         except NoReverseMatch:
             return ""
 
-    def get_harvest_url(self) -> str:
-        if self.is_service_type(OGCServiceEnum.CSW):
-            try:
-                return reverse(f'{self._meta.app_label}:{self.__class__.__name__.lower()}_harvest', args=[self.pk])
-            except NoReverseMatch:
-                pass
-        return ""
-
-    @property
-    def icon(self):
-        try:
-            return get_icon(getattr(IconEnum, self.service_type_name.upper()))
-        except AttributeError:
-            return ""
-
-    @cached_property
-    def _service_type(self):
-        return self.service_type
-
-    @cached_property
-    def service_type_name(self) -> str:
-        return self._service_type.name
-
-    @cached_property
-    def service_version(self) -> str:
-        return self._service_type.version
-
     @cached_property
     def major_service_version(self) -> int:
-        return int(self.service_version.split('.')[0])
+        return int(self.version.split('.')[0])
 
     @cached_property
     def minor_service_version(self) -> int:
-        return int(self.service_version.split('.')[1])
+        return int(self.version.split('.')[1])
 
     @cached_property
     def fix_service_version(self) -> int:
-        return int(self.service_version.split('.')[2])
-
-    def is_service_type(self, name: OGCServiceEnum):
-        """ Return True if the given service type name matches else return None
-
-            Returns:
-                True|False (boolean)
-        """
-        if self.service_type_name == name.value:
-            return True
-        else:
-            return False
-
-    @cached_property
-    def root_layer(self):
-        if self.is_service_type(OGCServiceEnum.WMS):
-            return self.layers.get(parent=None)
-        else:
-            return None
+        return int(self.version.split('.')[2])
 
     def get_session_for_request(self) -> Session:
         session = Session()
         if hasattr(self, "external_authentication"):
             session.auth = self.external_authentication.get_auth_for_request()
         return session
+
+
+class WmsService(Service, CapabilitiesDocumentModelMixin, GenericModelMixin, CommonServiceInfo, CommonInfo):
+    objects = WmsManager()
+
+    class Meta:
+        verbose_name = _("Web Map Service")
+        verbose_name_plural = _("Web Map Services")
+
+    def activate_routine(self):
+        # the active sate of this and all descendant elements shall be changed to the new value. Bulk update
+        # is the most efficient way to do it.
+        self.layers.update(is_active=self.is_active)
+
+    @cached_property
+    def root_layer(self):
+        return self.layers.get(parent=None)
+
+
+class WfsService(Service, CapabilitiesDocumentModelMixin, GenericModelMixin, CommonServiceInfo, CommonInfo):
+    objects = WfsManager()
+
+    class Meta:
+        verbose_name = _("Web Feature Service")
+        verbose_name_plural = _("Web Feature Services")
+
+    def activate_routine(self):
+        # the active sate of this and all descendant elements shall be changed to the new value. Bulk update
+        # is the most efficient way to do it.
+        self.featuretypes.update(is_active=self.is_active)
+
+
+class CswService(Service, CapabilitiesDocumentModelMixin, GenericModelMixin, CommonServiceInfo, CommonInfo):
+    class Meta:
+        verbose_name = _("Catalogue Service")
+        verbose_name_plural = _("Catalogue Services")
 
 
 class OperationUrl(CommonInfo):

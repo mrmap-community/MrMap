@@ -1,19 +1,15 @@
 import os
-from pathlib import Path
-
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MrMap.settings_docker")
 
 import django
 django.setup()
-from resourceNew.xmlmapper.ogc.capabilities.factory import WebService
 
 if __name__ == '__main__':
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    path = Path(current_dir + '/../test_data/wms/dwd_wms_1.3.0.xml')
+    from requests import Request
+    from resourceNew.services.register_service import RegisterOgcServiceService
 
-    xml_service = WebService(path)  # deserialized xml to XmlObject
+    request = Request(method="GET",
+                      url="https://maps.dwd.de/geoserver/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities")
+    db_service = RegisterOgcServiceService.register_service_from_remote(request=request)
 
-
-    xml_service.convert_to_model()
     i=0

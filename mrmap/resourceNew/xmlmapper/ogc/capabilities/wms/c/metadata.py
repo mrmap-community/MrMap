@@ -38,6 +38,10 @@ class Wms130ServiceMetadataContact(WmsServiceMetadataContact):
 class Wms130ServiceMetadata(WmsServiceMetadata):
     ROOT_NS = "default"
     ROOT_NAMESPACES = dict([("default", WMS_1_3_0_NAMESPACE)])
+    title = xmlmap.StringField(xpath="default:Title")
+    abstract = xmlmap.StringField(xpath="default:Abstract")
+    fees = xmlmap.StringField(xpath="default:Fees")
+    access_constraints = xmlmap.StringField(xpath="default:AccessConstraints")
     service_contact = xmlmap.NodeField(xpath="default:ContactInformation",
                                        node_class=Wms130ServiceMetadataContact)
     keywords = xmlmap.NodeListField(xpath="default:KeywordList/default:Keyword", node_class=Wms130Keyword)
@@ -48,3 +52,4 @@ class Wms130LayerMetadata(WmsLayerMetadata):
     ROOT_NAMESPACES = dict([("default", WMS_1_3_0_NAMESPACE)])
     title = xmlmap.StringField(xpath="default:Title")
     abstract = xmlmap.StringField(xpath="default:Abstract")
+    keywords = xmlmap.NodeListField(xpath="default:KeywordList/default:Keyword", node_class=Wms130Keyword)

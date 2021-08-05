@@ -4,7 +4,7 @@ from django.db import transaction
 from django.db.models import Q
 
 from resourceNew.models import Service, Keyword, Layer, LayerMetadata, ReferenceSystem, RemoteMetadata, \
-    MimeType, Style, LegendUrl, OperationUrl
+    MimeType, Style, LegendUrl, OperationUrl, MetadataContact
 
 
 class AbstractOgcDbServiceBuilder(ABC):
@@ -14,6 +14,7 @@ class AbstractOgcDbServiceBuilder(ABC):
     _proto_service = None
     _service = None
     _service_metadata = None
+    _metadata_contact = None
     _operation_urls = []
     _keywords = {}
     _reference_systems = {}
@@ -31,6 +32,7 @@ class AbstractOgcDbServiceBuilder(ABC):
 
     def reset(self) -> None:
         self._service_metadata = None
+        self._metadata_contact = None
         self._operation_urls = []
         self._keywords = {}
         self._reference_systems = {}
@@ -49,10 +51,17 @@ class AbstractOgcDbServiceBuilder(ABC):
         """Convert the proto_service to model instance and store it in private variable."""
         self._service = self._proto_service.convert_to_model()
 
+    def construct_service_metadata_contact(self) -> None:
+        self._metadata_contact = self._proto_service.service_metadata.service_contact.convert_to_model()
+
     def construct_service_metadata(self) -> None:
         """Convert the proto_service_metadata to model instance and store it in private variable."""
         self._service_metadata = self._proto_service.service_metadata.convert_to_model()
         self._service_metadata.described_object = self._service
+        self._service_metadata.metadata_contact = self._metadata_contact
+        self._service_metadata.service_contact = self._metadata_contact
+
+
 
     def construct_service_metadata_keywords(self) -> None:
         """Convert the proto_service_metadata__keywords to model instance."""
@@ -106,21 +115,25 @@ class AbstractOgcDbServiceBuilder(ABC):
         if reference_systems:
             _reference_system_query = Q()
             for reference_system in reference_systems:
+                _reference_system = reference_system.convert_to_model()
                 # todo: for loop in for loop!
                 #  maybe this filtering is not efficient. Check if simply get_or_create with all is more efficient.
-                if not f"{reference_system.prefix}:{reference_system.code}" in self._reference_systems:
-                    self._reference_systems.update({f"{reference_system.prefix}:{reference_system.code}": reference_system.convert_to_model()})
-                _reference_system_query |= Q(prefix=reference_system.prefix, code=reference_system.code)
-            self._m2m_relations.append((db_obj, "keywords", Keyword.objects.filter(_reference_system_query)))
+                if not f"{_reference_system.prefix}:{_reference_system.code}" in self._reference_systems:
+                    self._reference_systems.update({f"{_reference_system.prefix}:{_reference_system.code}": _reference_system})
+                _reference_system_query |= Q(prefix=_reference_system.prefix, code=_reference_system.code)
+            self._m2m_relations.append((db_obj, "keywords", ReferenceSystem.objects.filter(_reference_system_query)))
 
     def construct_remote_metadata(self, remote_metadata, service, content_type, object_id):
         """Generic method to convert proto_remote_metadata to model instance and store them in private list variable."""
         if remote_metadata:
-            _remote_metadata = remote_metadata.convert_to_model()
-            _remote_metadata.service = service
-            _remote_metadata.content_type = content_type
-            _remote_metadata.object_id = object_id
-            self._remote_metadata_list.append(_remote_metadata)
+            if not isinstance(remote_metadata, list):
+                remote_metadata = [remote_metadata]
+            for __remote_metadata in remote_metadata:
+                _remote_metadata = __remote_metadata.convert_to_model()
+                _remote_metadata.service = service
+                _remote_metadata.content_type = content_type
+                _remote_metadata.object_id = object_id
+                self._remote_metadata_list.append(_remote_metadata)
 
     def persist_service(self) -> None:
         """Persist the constructed service instance."""
@@ -129,6 +142,9 @@ class AbstractOgcDbServiceBuilder(ABC):
     def persist_operation_urls(self) -> None:
         """Persist all constructed operation url instances in bulk mode."""
         OperationUrl.objects.bulk_create(self._operation_urls)
+
+    def persist_metadata_contact(self) -> None:
+        self._metadata_contact.save()
 
     def persist_service_metadata(self) -> None:
         """Persist the constructed service metadata instance."""
@@ -171,10 +187,12 @@ class WmsDbBuilder(AbstractOgcDbServiceBuilder):
     specific implementations of the building steps.
     """
     _proto_service = None
+    _edge_counter = 0
 
     def reset(self) -> None:
         """Reset all local variables the construct (non persisted) a new service instance."""
         super().reset()
+        self._edge_counter = 0
         self._layers = []
         self._layer_metadata = []
         self._styles = []
@@ -191,31 +209,57 @@ class WmsDbBuilder(AbstractOgcDbServiceBuilder):
         self.reset()
         return Service.objects.get_full_service(pk=service_pk)
 
-    def traverse_layer_tree(self, base_parent, db_parent):
+    def _construct_layer_and_related(self, layer, db_parent, level):
+        self._edge_counter += 1
+
+        db_layer = layer.convert_to_model()
+        db_layer.service = self._service
+        db_layer.parent = db_parent
+        db_layer.level = level
+        db_layer.lft = self._edge_counter
+        self._layers.append(db_layer)
+
+        layer_metadata = layer.layer_metadata.convert_to_model()
+        layer_metadata.described_object = db_layer
+        self._layer_metadata.append(layer_metadata)
+
+        self.construct_reference_systems(db_obj=db_layer,
+                                         reference_systems=layer.reference_systems)
+
+        self.construct_keywords(db_obj=self._layer_metadata,
+                                keywords=layer.layer_metadata.keywords)
+
+        self.construct_remote_metadata(remote_metadata=layer.remote_metadata,
+                                       service=self._service,
+                                       object_id=db_layer.pk,
+                                       content_type=Layer)
+        return db_layer
+
+    def traverse_layer_tree(self, parent, db_parent, level=0):
         """Recursive function to traverse all descendant layers."""
-        for child_layer in base_parent.children:
-            layer = child_layer.convert_to_model()
-            layer.service = self._service
-            layer.parent = db_parent
-            self._layers.append(layer)
 
-            layer_metadata = child_layer.metadata.convert_to_model()
-            layer_metadata.described_object = layer
-            self._layer_metadata.append(layer_metadata)
+        self._edge_counter += 1
+        self.left = self._edge_counter
 
-            self.construct_reference_systems(db_obj=layer,
-                                             reference_systems=child_layer.reference_systems)
+        self.level = level
+        root_layer_trip = False
+        if not parent:
+            root_layer_trip = True
+            parent = self._proto_service.root_layer
+            db_parent = self._construct_layer_and_related(layer=self._proto_service.root_layer,
+                                                          db_parent=None,
+                                                          level=level)
 
-            self.construct_keywords(db_obj=self._layer_metadata,
-                                    keywords=child_layer.metadata.keywords)
-
-            self.construct_remote_metadata(remote_metadata=layer.remote_metadata,
-                                           service=self._service,
-                                           object_id=layer.pk,
-                                           content_type=Layer)
-
+        for child_layer in parent.children:
+            _db_parent = self._construct_layer_and_related(layer=child_layer, db_parent=db_parent, level=level+1 if root_layer_trip else level)
             if child_layer.children:
-                self.traverse_layer_tree(base_parent=base_parent, db_parent=db_parent)
+                self.traverse_layer_tree(parent=child_layer, db_parent=_db_parent, level=level+1)
+            else:
+                self._edge_counter += 1
+                _db_parent.rght = self._edge_counter
+        if root_layer_trip:
+            self._edge_counter += 1
+            db_parent.rght = self._edge_counter
 
     def construct_layer_tree(self) -> None:
         """Construct the root layer and traverse all descendant layers to construct all descendant layers and related
@@ -225,27 +269,8 @@ class WmsDbBuilder(AbstractOgcDbServiceBuilder):
            To increase performance, this method will also construct all related objects of any layer. Otherwise we need
            to traverse the layer tree several times to construct the different types of related objects.
         """
-        _root_layer = self._proto_service.root_layer.convert_to_model()
-        _root_layer.service = self._service
-        self._layers.append(_root_layer)
-
-        layer_metadata = self._proto_service.root_layer.metadata.convert_to_model()
-        layer_metadata.described_object = _root_layer
-        self._layer_metadata.append(layer_metadata)
-
-        self.construct_reference_systems(db_obj=_root_layer,
-                                         reference_systems=self._proto_service.root_layer.reference_systems)
-
-        self.construct_keywords(db_obj=self._layer_metadata,
-                                keywords=self._proto_service.root_layer.metadata.keywords)
-
-        self.construct_remote_metadata(remote_metadata=self._proto_service.root_layer.remote_metadata,
-                                       service=self._service,
-                                       object_id=_root_layer.pk,
-                                       content_type=Layer)
-
-        self.traverse_layer_tree(base_parent=self._proto_service.root_layer,
-                                 db_parent=_root_layer)
+        self.traverse_layer_tree(parent=None,
+                                 db_parent=None)
 
     def construct_styles(self, db_layer, styles) -> None:
         """Construct styles for a specific layer"""
@@ -308,7 +333,9 @@ class WmsDbDirector:
     """
     def build_service(self) -> None:
         # first construct all db instances which are not persisted.
+        self.builder.construct_service()
         self.builder.construct_operation_urls()
+        self.builder.construct_service_metadata_contact()
         self.builder.construct_service_metadata()
         self.builder.construct_service_metadata_keywords()
         self.builder.construct_remote_service_metadata()
@@ -318,6 +345,7 @@ class WmsDbDirector:
             # build service tree.
             self.builder.persist_service()
             self.builder.persist_operation_urls()
+            self.builder.persist_metadata_contact()
             self.builder.persist_service_metadata()
             self.builder.persist_layers()
             self.builder.persist_layer_metadata()

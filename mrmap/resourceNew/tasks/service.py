@@ -9,7 +9,7 @@ from resourceNew.models import Service as DbService, FeatureType, DatasetMetadat
 from resourceNew.models import RemoteMetadata
 from resourceNew.models.security import ExternalAuthentication
 from job.tasks import NewJob, CurrentTask
-from resourceNew.xmlmapper.ogc.capabilities import get_parsed_service
+from resourceNew.xmlmapper.ogc.capabilities.factory import OgcServiceXml
 from structure.enums import PendingTaskEnum
 from django.db import transaction
 from django.urls import reverse
@@ -242,7 +242,7 @@ def create_service_from_parsed_service(self,
         self.task.progress = 1/3
         self.task.save()
 
-    parsed_service = get_parsed_service(xml=response.content)
+    parsed_service = OgcServiceXml(xml=response.content)
 
     if self.task:
         self.task.phase = "persisting service..."
