@@ -278,7 +278,7 @@ class WmsDbBuilder(AbstractOgcDbServiceBuilder):
         LegendUrl.objects.bulk_create(objs=self._legend_urls)
 
 
-class WmsDirector:
+class WmsDbDirector:
     """
     The Director is only responsible for executing the building steps in a
     particular sequence. It is helpful when producing products according to a
