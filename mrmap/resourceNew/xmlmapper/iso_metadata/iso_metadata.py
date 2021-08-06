@@ -190,7 +190,12 @@ class BasicInformation(BaseIsoMetadata):
             else:
                 field_dict["is_broken"] = True
 
-        del field_dict["code_rs"], field_dict["code_space_rs"], field_dict["code_md"]
+        if "code_rs" in field_dict:
+            del field_dict["code_rs"]
+        if "code_space_rs" in field_dict:
+            del field_dict["code_space_rs"]
+        if "code_md" in field_dict:
+            del field_dict["code_md"]
 
     def get_date_stamp(self, field_dict):
         date = field_dict.get("date_stamp_date", None)

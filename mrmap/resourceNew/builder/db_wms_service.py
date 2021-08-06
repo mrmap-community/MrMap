@@ -58,6 +58,9 @@ class AbstractOgcDbServiceBuilder(ABC):
         """Convert the proto_service to model instance and store it in private variable."""
         if not self._service:
             self._service = self._proto_service.convert_to_model()
+        else:
+            # FIXME: use a generic update_from_dict(self._proto_service.get_field_dict()) to update all fields
+            self._service.version = self._proto_service.version
 
     def construct_service_metadata_contact(self) -> None:
         self._metadata_contact = self._proto_service.service_metadata.service_contact.convert_to_model()
