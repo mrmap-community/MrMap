@@ -14,8 +14,9 @@ class Wms130RemoteMetadata(RemoteMetadata):
     ROOT_NAMESPACES = dict([("xlink", XLINK_NAMESPACE),
                             ("default", WMS_1_3_0_NAMESPACE)])
     ROOT_NS = "default"
-    ignore_fields = ["mime_type"]
+    ignore_fields = ["mime_type", "type"]
 
+    type = xmlmap.StringField(xpath="@type")
     mime_type = xmlmap.StringField(xpath="default:Format")
     link = xmlmap.StringField(xpath="default:OnlineResource/@xlink:href")
 
@@ -60,7 +61,7 @@ class Wms130LayerConverter(LayerConverter):
     is_queryable = xmlmap.SimpleBooleanField(xpath="@queryable", true=1, false=0)
     is_opaque = xmlmap.SimpleBooleanField(xpath="@opaque", true=1, false=0)
     is_cascaded = xmlmap.SimpleBooleanField(xpath="@cascaded", true=1, false=0)
-    remote_metadata = xmlmap.NodeListField(xpath="default:MetadataURL[@type='TC211']", node_class=Wms130RemoteMetadata)
+    remote_metadata = xmlmap.NodeListField(xpath="default:MetadataURL", node_class=Wms130RemoteMetadata)
 
     # dimensions = xmlmap.NodeListField(xpath="Dimension", node_class=Dimension130)
     reference_systems = xmlmap.NodeListField(xpath="default:CRS", node_class=Wms130ReferenceSystem)
@@ -126,6 +127,7 @@ class Wms130CapabilitiesConverter(Wms130OperationUrlsMixin, OgcServiceCapabiliti
                             ("inspire_vs", INSPIRE_VS_NAMESPACE),
                             ("xlink", XLINK_NAMESPACE)])
     XSD_SCHEMA = "http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd"
+
     url = xmlmap.StringField(xpath="default:Service/default:OnlineResource[@xlink:type='simple']/@xlink:href")
     service_metadata = xmlmap.NodeField(xpath="default:Service", node_class=Wms130ServiceMetadata)
     root_layer = xmlmap.NodeField(xpath="default:Capability/default:Layer", node_class=Wms130LayerConverter)

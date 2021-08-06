@@ -131,6 +131,12 @@ def schedule_collect_linked_metadata(self,
         header = [fetch_remote_metadata_xml.s(remote_metadata.pk, progress_step_size, **kwargs) for remote_metadata in remote_metadata_list]
         callback = parse_remote_metadata_xml_for_service.s(progress_step_size, **kwargs)
         chord(header)(callback)
+    else:
+        if self.task:
+            self.task.status = PendingTaskEnum.SUCCESS.value
+            self.task.done_at = timezone.now()
+            self.task.phase = f"Done. No remote metadata where found while registration process."
+            self.task.save()
     return service_id
 
 
@@ -204,7 +210,7 @@ def parse_remote_metadata_xml_for_service(self,
         if remote_metadata_list:
             self.task.phase = f'Done. <a href="{reverse("resourceNew:dataset_metadata_list")}?id__in={",".join(str(pk) for pk in dataset_list)}">dataset metadata</a>'
         else:
-            self.task.phase = f'Done. No linked metadata entries.'
+            self.task.phase = f'Done with errors. See logs for details.'
         self.task.save()
     return successfully_list
 

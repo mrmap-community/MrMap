@@ -1,8 +1,7 @@
 from celery import states
 from django.db.models import Q
 from job.models import Task, Job
-from resourceNew.enums.service import OGCServiceEnum
-from resourceNew.models import OgcServiceClient, Layer, FeatureType, FeatureTypeElement, ServiceMetadata, LayerMetadata, \
+from resourceNew.models import OgcWms, OgcWfs, OgcCsw, Layer, FeatureType, FeatureTypeElement, ServiceMetadata, LayerMetadata, \
     FeatureTypeMetadata, DatasetMetadata
 from resourceNew.models.security import AllowedOperation, ServiceAccessGroup, AnalyzedResponseLog, ExternalAuthentication, \
     ProxySetting
@@ -12,9 +11,9 @@ def get_app_view_model(user):
     # todo:
     #  jobs_count = user.get_instances(klass=Job).filter(tasks__status__in=[states.STARTED, states.PENDING]).count()
     tasks_count = user.get_instances(klass=Task, filter=Q(status__in=[states.STARTED, states.PENDING])).count()
-    wms_count = user.get_instances(klass=OgcServiceClient).filter(service_type__name=OGCServiceEnum.WMS.value).count()
-    wfs_count = user.get_instances(klass=OgcServiceClient).filter(service_type__name=OGCServiceEnum.WFS.value).count()
-    csw_count = user.get_instances(klass=OgcServiceClient).filter(service_type__name=OGCServiceEnum.CSW.value).count()
+    wms_count = user.get_instances(klass=OgcWms).count()
+    wfs_count = user.get_instances(klass=OgcWfs).count()
+    csw_count = user.get_instances(klass=OgcCsw).count()
     layers_count = user.get_instances(klass=Layer).count()
     feature_types_count = user.get_instances(klass=FeatureType).count()
     feature_type_elements_count = user.get_instances(klass=FeatureTypeElement).count()
