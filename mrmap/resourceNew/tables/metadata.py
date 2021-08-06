@@ -89,7 +89,7 @@ class DatasetMetadataTable(SecuredTable):
     def render_linked_service_count(self, record, value):
         f'<a tabindex="0" data-bs-toggle="popover" data-bs-trigger="focus" title="details" ' \
         f'data-bs-content="content">details</a> '
-        link = f'<a href="{reverse("resourceNew:service_csw_list")}?id__in='
+        link = f'<a href="{reverse("resourceNew:ogc_csw_list")}?id__in='
         for service in record.self_pointing_services.all():
             link += f'{service.pk  },'
         link += f'">{value}</a>'

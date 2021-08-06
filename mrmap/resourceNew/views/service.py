@@ -4,11 +4,9 @@ from extra_views import UpdateWithInlinesView, CreateWithInlinesView
 from guardian.core import ObjectPermissionChecker
 from MrMap.icons import get_icon, IconEnum
 from job.models import Job
-from main.utils import camel_to_snake
 from main.views import SecuredListMixin, SecuredDetailView, SecuredUpdateView, SecuredFormView, SecuredDeleteView
 from resourceNew.formsets.service import ExternalAuthenticationInline, ProxySettingInline
 from resourceNew.tasks import service as service_tasks
-from resourceNew.enums.service import OGCServiceEnum
 from resourceNew.filtersets.service import LayerFilterSet, FeatureTypeFilterSet, FeatureTypeElementFilterSet, \
     ServiceFilterSet, OgcWmsFilterSet
 from resourceNew.forms.service import RegisterServiceForm, ServiceModelForm, LayerModelForm, CreateOgcWmsModelForm, \

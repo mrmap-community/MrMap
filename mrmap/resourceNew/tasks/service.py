@@ -2,6 +2,7 @@ from django.utils import timezone
 from celery import shared_task, chain, chord, group
 from requests import Session, Request
 from requests.auth import HTTPDigestAuth
+from requests.exceptions import MissingSchema
 
 from MrMap.settings import PROXIES
 from resourceNew.enums.service import AuthTypeEnum
@@ -164,10 +165,10 @@ def fetch_remote_metadata_xml(self,
                     pass
                 task.save()
         return remote_metadata.id
+    except MissingSchema:
+        settings.ROOT_LOGGER.error(f"parsing failed: remote metadata ({remote_metadata_id}) has no link attribute.")
     except Exception as e:
-        i = 0
-        # settings.ROOT_LOGGER.exception(e, stack_info=True, exc_info=True)
-        # todo: log exception in debug level
+        settings.ROOT_LOOGER.debug(e.__traceback__.__str__())
         return None
 
 
@@ -200,7 +201,10 @@ def parse_remote_metadata_xml_for_service(self,
     if self.task:
         self.task.status = PendingTaskEnum.SUCCESS.value
         self.task.done_at = timezone.now()
-        self.task.phase = f'Done. <a href="{reverse("resourceNew:dataset_metadata_list")}?id__in={",".join(str(pk) for pk in dataset_list)}">dataset metadata</a>'
+        if remote_metadata_list:
+            self.task.phase = f'Done. <a href="{reverse("resourceNew:dataset_metadata_list")}?id__in={",".join(str(pk) for pk in dataset_list)}">dataset metadata</a>'
+        else:
+            self.task.phase = f'Done. No linked metadata entries.'
         self.task.save()
     return successfully_list
 
