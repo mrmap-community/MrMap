@@ -1,9 +1,7 @@
 from eulxml import xmlmap
-
-from resourceNew.xmlmapper.mixins import DBModelConverter
-from resourceNew.xmlmapper.namespaces import XLINK_NAMESPACE
-from resourceNew.xmlmapper.ogc.capabilities.metadata import RemoteMetadata
-from resourceNew.xmlmapper.ogc.capabilities.service import ReferenceSystem
+from resourceNew.xmlmapper.namespaces import XLINK_NAMESPACE, INSPIRE_VS_NAMESPACE
+from resourceNew.xmlmapper.ogc.capabilities.metadata import RemoteMetadata, KeywordConverter
+from resourceNew.xmlmapper.ogc.capabilities.service import ReferenceSystem, OgcServiceCapabilitiesConverter
 from resourceNew.xmlmapper.ogc.capabilities.wms.service import LegendUrlConverter, StyleConverter, LayerConverter, WmsOperationUrlsMixin, \
     WmsGetCapabilitiesUrls, WmsGetMapUrls, WmsGetFeatureInfoUrls, WmsDescribeLayerUrls, WmsGetLegendGraphicUrls, \
     WmsGetStylesUrls
@@ -12,7 +10,11 @@ from resourceNew.xmlmapper.ogc.capabilities.wms.b.metadata import Wms110ServiceM
 
 class Wms110RemoteMetadata(RemoteMetadata):
     ROOT_NAMESPACES = dict([("xlink", XLINK_NAMESPACE)])
-    link = xmlmap.StringField(xpath="OnlineResource/@xlink=href")
+    ignore_fields = ["mime_type", "type"]
+
+    type = xmlmap.StringField(xpath="@type")
+    mime_type = xmlmap.StringField(xpath="default:Format")
+    link = xmlmap.StringField(xpath="OnlineResource/@xlink:href")
 
 
 class Wms110ReferenceSystem(ReferenceSystem):
@@ -44,14 +46,14 @@ class Wms110Layer(LayerConverter):
     is_queryable = xmlmap.SimpleBooleanField(xpath="@queryable", true=1, false=0)
     is_opaque = xmlmap.SimpleBooleanField(xpath="@opaque", true=1, false=0)
     is_cascaded = xmlmap.SimpleBooleanField(xpath="@cascaded", true=1, false=0)
-    remote_metadata = xmlmap.NodeListField(xpath="MetadataURL[@type='TC211']", node_class=Wms110RemoteMetadata)
+    remote_metadata = xmlmap.NodeListField(xpath="MetadataURL", node_class=Wms110RemoteMetadata)
 
     # dimensions = xmlmap.NodeListField(xpath="Dimension", node_class=Dimension111)
 
     reference_systems = xmlmap.NodeListField(xpath="SRS", node_class=Wms110ReferenceSystem)
-    parent = xmlmap.NodeField(xpath="../../Layer", node_class="self")
     children = xmlmap.NodeListField(xpath="Layer", node_class="self")
     layer_metadata = xmlmap.NodeField(xpath=".", node_class=Wms110LayerMetadata)
+    keywords = xmlmap.NodeListField(xpath="default:KeywordList/default:Keyword", node_class=KeywordConverter)
 
 
 class Wms110GetCapabilitiesUrls(WmsGetCapabilitiesUrls):
@@ -93,10 +95,10 @@ class Wms110OperationUrlsMixin(WmsOperationUrlsMixin):
                                        node_class=Wms110GetStylesUrls)
 
 
-class Wms110Service(Wms110OperationUrlsMixin, DBModelConverter):
+class Wms110CapabilitiesConverter(Wms110OperationUrlsMixin, OgcServiceCapabilitiesConverter):
     """Abstract service xml mapper class"""
-    ROOT_NAMESPACES = dict([("xlink", XLINK_NAMESPACE)])
+    ROOT_NAMESPACES = dict([("inspire_vs", INSPIRE_VS_NAMESPACE),
+                           ("xlink", XLINK_NAMESPACE)])
     ROOT_NAME = "WMT_MS_Capabilities"
-    url = xmlmap.StringField(xpath="Service/OnlineResource[@xlink:type='simple']/@xlink:href")
     service_metadata = xmlmap.NodeField(xpath="Service", node_class=Wms110ServiceMetadata)
     root_layer = xmlmap.NodeField(xpath="Capability/Layer", node_class=Wms110Layer)

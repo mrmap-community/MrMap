@@ -1,6 +1,6 @@
 from eulxml import xmlmap
 from resourceNew.xmlmapper.namespaces import WMS_1_3_0_NAMESPACE
-from resourceNew.xmlmapper.ogc.capabilities.metadata import MetadataUrl, KeywordConverter
+from resourceNew.xmlmapper.ogc.capabilities.metadata import MetadataUrlConverter, KeywordConverter
 from resourceNew.xmlmapper.ogc.capabilities.wms.metadata import WmsServiceMetadataContact, WmsServiceMetadata, \
     WmsLayerMetadata
 
@@ -10,7 +10,7 @@ class Wms130Keyword(KeywordConverter):
     ROOT_NAMESPACES = dict([("default", WMS_1_3_0_NAMESPACE)])
 
 
-class Wms130MetadataUrl(MetadataUrl):
+class Wms130MetadataUrl(MetadataUrlConverter):
     ROOT_NS = "default"
     ROOT_NAMESPACES = dict([("default", WMS_1_3_0_NAMESPACE)])
 

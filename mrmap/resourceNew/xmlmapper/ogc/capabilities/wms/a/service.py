@@ -1,9 +1,9 @@
 from eulxml import xmlmap
 from resourceNew.xmlmapper.namespaces import XLINK_NAMESPACE
-from resourceNew.xmlmapper.ogc.capabilities.service import ReferenceSystem
+from resourceNew.xmlmapper.ogc.capabilities.service import ReferenceSystem, OgcServiceCapabilitiesConverter
 from resourceNew.xmlmapper.ogc.capabilities.wms.service import LegendUrlConverter, StyleConverter, LayerConverter, \
     WmsOperationUrlsMixin, WmsGetCapabilitiesUrls, WmsGetMapUrls, WmsGetFeatureInfoUrls, WmsDescribeLayerUrls, \
-    WmsGetLegendGraphicUrls, WmsGetStylesUrls, WmsCapabilitiesConverter
+    WmsGetLegendGraphicUrls, WmsGetStylesUrls
 from resourceNew.xmlmapper.ogc.capabilities.wms.a.metadata import Wms100ServiceMetadata, Wms100LayerMetadata
 
 
@@ -42,7 +42,6 @@ class Wms100Layer(LayerConverter):
 
     #dimensions = xmlmap.NodeListField(xpath="Dimension", node_class=Dimension111)
     _reference_systems = xmlmap.NodeListField(xpath="SRS", node_class=Wms100ReferenceSystem)
-    parent = xmlmap.NodeField(xpath="../../Layer", node_class="self")
     children = xmlmap.NodeListField(xpath="Layer", node_class="self")
     layer_metadata = xmlmap.NodeField(xpath=".", node_class=Wms100LayerMetadata)
 
@@ -52,10 +51,18 @@ class Wms100Layer(LayerConverter):
         _reference_systems = []
         for reference_system in self._reference_systems:
             if " " in reference_system:
-                _reference_systems.extend(reference_system.split(" "))
+                for _ref_system in reference_system.split(" "):
+                    _concrete_reference_system = ReferenceSystem()
+                    _concrete_reference_system.ref_system = _ref_system
+                    _reference_systems.append(_concrete_reference_system)
             else:
                 _reference_systems.append(reference_system)
         return _reference_systems
+
+    @reference_systems.setter
+    def reference_systems(self, reference_systems):
+        # Todo: implement this setter
+        raise NotImplementedError
 
 
 class Wms100GetCapabilitiesUrls(WmsGetCapabilitiesUrls):
@@ -97,7 +104,7 @@ class Wms100OperationUrlsMixin(WmsOperationUrlsMixin):
                                        node_class=Wms100GetStylesUrls)
 
 
-class Wms100Service(Wms100OperationUrlsMixin, WmsCapabilitiesConverter):
+class Wms100CapabilitiesConverter(Wms100OperationUrlsMixin, OgcServiceCapabilitiesConverter):
     """Abstract service xml mapper class"""
     ROOT_NAMESPACES = dict([("xlink", XLINK_NAMESPACE)])
     ROOT_NAME = "WMT_MS_Capabilities"

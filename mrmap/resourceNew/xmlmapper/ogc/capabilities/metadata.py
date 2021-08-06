@@ -50,7 +50,7 @@ class OgcServiceMetadataConverter(DBModelConverter):
     access_constraints = xmlmap.StringField(xpath="AccessConstraints")
 
 
-class MetadataUrl(DBModelConverter):
+class MetadataUrlConverter(DBModelConverter):
     model = 'resourceNew.RemoteMetadata'
     ROOT_NAMESPACES = dict([("xlink", XLINK_NAMESPACE)])
     ROOT_NAME = "MetadataUrl"

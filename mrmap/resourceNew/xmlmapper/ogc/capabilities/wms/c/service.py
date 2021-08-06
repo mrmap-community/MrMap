@@ -1,5 +1,4 @@
 from eulxml import xmlmap
-
 from resourceNew.xmlmapper.namespaces import XLINK_NAMESPACE, INSPIRE_VS_NAMESPACE, WMS_1_3_0_NAMESPACE
 from resourceNew.xmlmapper.ogc.capabilities.metadata import RemoteMetadata
 from resourceNew.xmlmapper.ogc.capabilities.service import ReferenceSystem, OgcServiceCapabilitiesConverter
@@ -43,7 +42,7 @@ class Wms130Style(StyleConverter):
 
     name = xmlmap.StringField(xpath="default:Name")
     title = xmlmap.StringField(xpath="default:Title")
-    legend_url = xmlmap.NodeField(xpath="LegendURL", node_class=Wms130LegendUrl)
+    legend_url = xmlmap.NodeField(xpath="default:LegendURL", node_class=Wms130LegendUrl)
 
 
 class Wms130LayerConverter(LayerConverter):
@@ -65,7 +64,6 @@ class Wms130LayerConverter(LayerConverter):
 
     # dimensions = xmlmap.NodeListField(xpath="Dimension", node_class=Dimension130)
     reference_systems = xmlmap.NodeListField(xpath="default:CRS", node_class=Wms130ReferenceSystem)
-    parent = xmlmap.NodeField(xpath="../../default:Layer", node_class="self")
     children = xmlmap.NodeListField(xpath="default:Layer", node_class="self")
     layer_metadata = xmlmap.NodeField(xpath=".", node_class=Wms130LayerMetadata)
     keywords = xmlmap.NodeListField(xpath="default:KeywordList/default:Keyword", node_class=Wms130Keyword)
