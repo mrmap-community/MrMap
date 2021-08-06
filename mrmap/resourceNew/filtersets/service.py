@@ -1,15 +1,23 @@
 import django_filters
 from django.utils import timezone
 from django_filters.widgets import RangeWidget
-from resourceNew.models.service import Layer, FeatureType, FeatureTypeElement
+from resourceNew.models.ogcservice import Layer, FeatureType, FeatureTypeElement, OgcWms
 from django.utils.translation import gettext_lazy as _
 
-from resourceNew.models.service import Service
+from resourceNew.models.ogcservice import OgcService
 
 
 class ServiceFilterSet(django_filters.FilterSet):
     class Meta:
-        model = Service
+        model = OgcService
+        fields = {
+            "id": ["in", ],
+        }
+
+
+class OgcWmsFilterSet(django_filters.FilterSet):
+    class Meta:
+        model = OgcWms
         fields = {
             "id": ["in", ],
         }

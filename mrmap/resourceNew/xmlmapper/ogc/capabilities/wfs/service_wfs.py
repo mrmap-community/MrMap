@@ -6,7 +6,7 @@ from eulxml import xmlmap
 from resourceNew.xmlmapper.mixins import DBModelConverterMixin
 from resourceNew.xmlmapper.namespaces import WFS_2_0_0_NAMESPACE, WFS_1_1_2_NAMESPACE, OWS_1_1_0_NAMESPACE, \
     OWS_1_0_0_NAMESPACE
-from resourceNew.xmlmapper.ogc.capabilities.service import Service
+from resourceNew.xmlmapper.ogc.capabilities.service import OgcServiceClient
 
 
 class FeatureType(DBModelConverterMixin, xmlmap.XmlObject, ABC):
@@ -50,7 +50,7 @@ class FeatureType200(FeatureType):
         return dic
 
 
-class WfsService(Service, ABC):
+class WfsService(OgcServiceClient, ABC):
     """Abstract wms service xml mapper class.
 
     :attr all_layers: cache to store the layer list, which is computed by the :meth:`~.get_all_layers`

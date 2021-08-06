@@ -7,7 +7,7 @@ from django.utils import timezone
 from eulxml import xmlmap
 from job.tasks import NewJob, CurrentTask
 from resourceNew.enums.service import OGCOperationEnum, HttpMethodEnum
-from resourceNew.models import DatasetMetadata, Service, OperationUrl
+from resourceNew.models import DatasetMetadata, OgcServiceClient, OperationUrl
 from resourceNew.models.harvest import HarvestResult
 from resourceNew.ows_client.request_builder import CatalogueServiceWeb
 from resourceNew.xmlmapper.ogc.csw_get_record_response import GetRecordsResponse
@@ -38,7 +38,7 @@ def schedule_get_records(self,
                          step_size,
                          service_id,
                          **kwargs):
-    db_service = Service.objects.get(pk=service_id)
+    db_service = OgcServiceClient.objects.get(pk=service_id)
     get_records_url = OperationUrl.objects.values_list("url", flat=True).get(service__id=service_id,
                                                                              operation=OGCOperationEnum.GET_RECORDS.value,
                                                                              method=HttpMethodEnum.GET.value)
@@ -101,7 +101,7 @@ def get_response_elapsed(self,
         self.task.status = PendingTaskEnum.STARTED.value
         self.task.phase = f"Start analyzing elapsing time of the request for maxRecords query parameter '{test_max_records}'"
         self.task.save()
-    db_service = Service.objects.get(pk=service_id)
+    db_service = OgcServiceClient.objects.get(pk=service_id)
     get_records_url = OperationUrl.objects.values_list("url", flat=True).get(service__id=service_id,
                                                                              operation=OGCOperationEnum.GET_RECORDS.value,
                                                                              method=HttpMethodEnum.GET.value)
@@ -143,7 +143,7 @@ def get_records(self,
                 progress_step_size,
                 **kwargs):
     sleep(random.uniform(0.1, 0.9))
-    db_service = Service.objects.get(pk=service_id)
+    db_service = OgcServiceClient.objects.get(pk=service_id)
     get_records_url = OperationUrl.objects.values_list("url", flat=True).get(service__id=service_id,
                                                                              operation=OGCOperationEnum.GET_RECORDS.value,
                                                                              method=HttpMethodEnum.GET.value)
@@ -160,7 +160,7 @@ def get_records(self,
     content_type = response.headers.get("content-type")
     if "/" in content_type:
         content_type = content_type.split("/")[-1]
-    result = HarvestResult.objects.create(service=Service.objects.get(id=service_id),
+    result = HarvestResult.objects.create(service=OgcServiceClient.objects.get(id=service_id),
                                           job=self.task.job)
     result.result_file.save(name=f'{start_position}_to_{start_position + step_size - 1}_of_{max_records}.{content_type}',
                             content=ContentFile(response.text))
@@ -199,7 +199,7 @@ def analyze_results(self,
         self.task.status = PendingTaskEnum.STARTED.value
         self.task.phase = f"Persisting downloaded records: 0 / {total_records}"
         self.task.save()
-    service = Service.objects.get(pk=service_id)
+    service = OgcServiceClient.objects.get(pk=service_id)
     results = HarvestResult.objects.filter(id__in=harvest_results)
     dataset_list = []
     progress_step_size = 100 / total_records / 2

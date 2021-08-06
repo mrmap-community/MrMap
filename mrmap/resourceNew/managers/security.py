@@ -106,7 +106,7 @@ class OperationUrlManager(models.Manager):
 class ServiceSecurityManager(models.Manager):
 
     def _collect_data_for_security_facade(self, request) -> QuerySet:
-        from resourceNew.models.service import OperationUrl  # to avoid circular import
+        from resourceNew.models.ogcservice import OperationUrl  # to avoid circular import
         from resourceNew.models.security import AllowedOperation  # to avoid circular import
         if request.query_parameters.get("request").lower() == OGCOperationEnum.GET_CAPABILITIES.value.lower():
             return super().get_queryset().select_related("document") \

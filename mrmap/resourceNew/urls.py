@@ -14,24 +14,28 @@ urlpatterns = [
     # Service views
     path("service/add", service_views.RegisterServiceFormView.as_view(), name="service_add"),
 
-    path("service/wms", service_views.WmsListView.as_view(), name="service_wms_list"),
+
+    path("service/wms", service_views.WmsListView.as_view(), name="ogc_wms_list"),
+    path("service/wms/add", service_views.OgcWmsCreateView.as_view(), name="ogc_wms_add"),
     path("service/layers", service_views.LayerListView.as_view(), name="layer_list"),
 
-    path("service/wfs", service_views.WfsListView.as_view(), name="service_wfs_list"),
+    path("service/wfs", service_views.WfsListView.as_view(), name="ogc_wfs_list"),
     path("service/featuretypes", service_views.FeatureTypeListView.as_view(), name="feature_type_list"),
     path("service/featuretypeelements", service_views.FeatureTypeElementListView.as_view(), name="feature_type_element_list"),
 
-    path("service/csw", service_views.CswListView.as_view(), name="service_csw_list"),
+    path("service/csw", service_views.CswListView.as_view(), name="ogc_csw_list"),
 
-    path("service/<pk>/operation", ows_views.GenericOwsServiceOperationFacade.as_view(), name="service_operation_view"),
-    path("service/<pk>/xml", service_views.ServiceXmlView.as_view(), name="service_xml_view"),
-    path("service/<pk>/activate", service_views.ServiceActivateView.as_view(), name="service_activate"),
-    path("service/<pk>/change", service_views.ServiceUpdateView.as_view(), name="service_change"),
-    path("service/<pk>/delete", service_views.ServiceDeleteView.as_view(), name="service_delete"),
+    path("service/<pk>/operation", ows_views.GenericOwsServiceOperationFacade.as_view(), name="ogc_service_operation_view"),
+    path("service/<pk>/xml", service_views.ServiceXmlView.as_view(), name="ogc_service_xml_view"),
     path("service/<pk>/harvest", harvest_views.HarvestServiceFormView.as_view(), name="service_harvest"),
 
-    path("service/wms/<pk>/tree", service_views.ServiceWmsTreeView.as_view(), name="service_wms_tree_view"),
-    path("service/wfs/<pk>/tree", service_views.ServiceWfsTreeView.as_view(), name="service_wfs_tree_view"),
+    path("service/wms/<pk>/change", service_views.OgcWmsUpdateView.as_view(), name="ogc_wms_change"),
+    path("service/wms/<pk>/activate", service_views.OgcWmsActivateView.as_view(), name="ogc_wms_activate"),
+    path("service/wms/<pk>/tree", service_views.ServiceWmsTreeView.as_view(), name="ogc_wms_tree_view"),
+    path("service/wms/<pk>/delete", service_views.OgcWmsDeleteView.as_view(), name="ogc_wms_delete"),
+
+    path("service/wfs/<pk>/tree", service_views.ServiceWfsTreeView.as_view(), name="ogc_wfs_tree_view"),
+    path("service/wfs/<pk>/delete", service_views.OgcWfsDeleteView.as_view(), name="ogc_wfs_delete"),
 
     path("service/layers/<pk>/change", service_views.LayerUpdateView.as_view(), name="layer_change"),
     path("service/featuretypes/<pk>/change", service_views.FeatureTypeUpdateView.as_view(), name="feature_type_change"),

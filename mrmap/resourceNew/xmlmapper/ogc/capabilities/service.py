@@ -3,7 +3,7 @@ from resourceNew.xmlmapper.exceptions import SemanticError
 from resourceNew.xmlmapper.mixins import DBModelConverter
 from resourceNew.xmlmapper.namespaces import INSPIRE_VS_NAMESPACE, XLINK_NAMESPACE
 from resourceNew.xmlmapper.ogc.capabilities.metadata import InspireMetadataUrl
-from resourceNew.models.service import Service
+from resourceNew.models.ogcservice import OgcWms
 
 
 class ReferenceSystem(DBModelConverter):
@@ -64,7 +64,7 @@ class OperationUrl(DBModelConverter):
 
 class OgcServiceCapabilitiesConverter(DBModelConverter):
     """Converter service xml mapper class"""
-    model = Service
+    model = OgcWms
     ROOT_NAMESPACES = dict([("inspire_vs", INSPIRE_VS_NAMESPACE),
                             ("xlink", XLINK_NAMESPACE)])
     remote_metadata = xmlmap.NodeField(xpath="inspire_vs:ExtendedCapabilities",

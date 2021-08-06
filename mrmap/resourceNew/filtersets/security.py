@@ -3,7 +3,7 @@ from dal import autocomplete
 from django.contrib.auth import get_user_model
 
 from resourceNew.enums.service import OGCOperationEnum
-from resourceNew.models import Service
+from resourceNew.models import OgcService
 from resourceNew.models.security import AllowedOperation, ServiceAccessGroup, AnalyzedResponseLog, ExternalAuthentication
 from django.utils.translation import gettext_lazy as _
 
@@ -59,7 +59,7 @@ class AnalyzedResponseLogFilterSet(django_filters.FilterSet):
                                                                                              }))
     service = django_filters.ModelMultipleChoiceFilter(label=_("Service"),
                                                        field_name="response__request__service",
-                                                       queryset=Service.objects.all(),
+                                                       queryset=OgcService.objects.all(),
                                                        widget=autocomplete.ModelSelect2Multiple(url="resourceNew.autocomplete:service_ac"))
 
     class Meta:

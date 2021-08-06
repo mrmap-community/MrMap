@@ -10,6 +10,7 @@ class IconEnum(EnumChoice):
     WFS = "fas fa-draw-polygon"
     FEATURETYPE = "fas fa-draw-polygon"
     WMS = "far fa-map"
+    OGC_WMS = "far fa-map"
     LAYER = "fas fa-layer-group"
     CSW = "fas fa-book"
     DATASET = "fas fa-clipboard-list"

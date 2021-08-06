@@ -684,7 +684,7 @@ class WfsService(WebMapAndFeatureService):
                                                                       "polygon": polygon})
 
 
-def OgcService(base_url: str, service_type: str, version: str):
+def OgcServiceClient(base_url: str, service_type: str, version: str):
     """ ogc service factory function, returns a service type specific WebService object
 
         Args:

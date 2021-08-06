@@ -52,16 +52,16 @@
                 <div class="dropdown-menu" aria-labelledby="navbarServicesDropdown">
                     <h6 class="dropdown-header">{% trans 'Web Map Service' %}</h6>
                     <div class="d-flex">
-                        <a class="dropdown-item" href="{% url 'resourceNew:service_wms_list' %}">{% autoescape off %}{{ICONS.WMS}}{% endautoescape %}  {% trans 'WMS' %} <span data-bind="text: wmsCount" class="badge badge-secondary"></span></a>
+                        <a class="dropdown-item" href="{% url 'resourceNew:ogc_wms_list' %}">{% autoescape off %}{{ICONS.WMS}}{% endautoescape %}  {% trans 'WMS' %} <span data-bind="text: wmsCount" class="badge badge-secondary"></span></a>
                         {% if "resourceNew.add_service" in perms %}
-                        <a class="btn btn-sm btn-success mr-1 mb-1" href="{% url 'resourceNew:service_add' %}" title="{% trans 'Register new service' %}" role="button">{% autoescape off %}{{ICONS.ADD}}{% endautoescape %}</a>
+                        <a class="btn btn-sm btn-success mr-1 mb-1" href="{% url 'resourceNew:ogc_wms_add' %}" title="{% trans 'Register new wms' %}" role="button">{% autoescape off %}{{ICONS.ADD}}{% endautoescape %}</a>
                         {% endif %}
                     </div>
                     <a class="dropdown-item" href="{% url 'resourceNew:layer_list' %}">{% autoescape off %}{{ICONS.LAYER}}{% endautoescape %}  {% trans 'Layers' %} <span data-bind="text: layersCount"class="badge badge-secondary"></span></a>
                     <div class="dropdown-divider"></div>
                     <h6 class="dropdown-header">{% trans 'Web Feature Service' %}</h6>
                     <div class="d-flex">
-                        <a class="dropdown-item" href="{% url 'resourceNew:service_wfs_list' %}">{% autoescape off %}{{ICONS.WFS}}{% endautoescape %} {% trans 'WFS' %} <span data-bind="text: wfsCount" class="badge badge-secondary"></span></a>
+                        <a class="dropdown-item" href="{% url 'resourceNew:ogc_wfs_list' %}">{% autoescape off %}{{ICONS.WFS}}{% endautoescape %} {% trans 'WFS' %} <span data-bind="text: wfsCount" class="badge badge-secondary"></span></a>
                         {% if "resourceNew.add_service" in perms %}
                         <a class="btn btn-sm btn-success mr-1 mb-1" href="{% url 'resourceNew:service_add' %}" title="{% trans 'Register new service' %}" role="button">{% autoescape off %}{{ICONS.ADD}}{% endautoescape %}</a>
                         {% endif %}
@@ -71,7 +71,7 @@
                     <div class="dropdown-divider"></div>
                     <h6 class="dropdown-header">{% trans 'Catalogue Service' %}</h6>
                     <div class="d-flex">
-                        <a class="dropdown-item" href="{% url 'resourceNew:service_csw_list' %}">{% autoescape off %}{{ICONS.CSW}}{% endautoescape %} {% trans 'CSW' %} <span data-bind="text: cswCount" class="badge badge-secondary"></span></a>
+                        <a class="dropdown-item" href="{% url 'resourceNew:ogc_csw_list' %}">{% autoescape off %}{{ICONS.CSW}}{% endautoescape %} {% trans 'CSW' %} <span data-bind="text: cswCount" class="badge badge-secondary"></span></a>
                         {% if "resourceNew.add_service" in perms %}
                         <a class="btn btn-sm btn-success mr-1" href="{% url 'resourceNew:service_add' %}" title="{% trans 'Register new service' %}" role="button">{% autoescape off %}{{ICONS.ADD}}{% endautoescape %}</a>
                         {% endif %}

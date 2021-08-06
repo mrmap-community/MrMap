@@ -1,15 +1,11 @@
-from collections import OrderedDict
-
 from django.contrib.gis.geos import Polygon
 from eulxml import xmlmap
 
 from main.utils import camel_to_snake
 from resourceNew.xmlmapper.mixins import DBModelConverter
 from resourceNew.xmlmapper.namespaces import XLINK_NAMESPACE
-from resourceNew.xmlmapper.ogc.capabilities.service import OperationUrl, OgcServiceCapabilitiesConverter
-from resourceNew.models.service import Layer
-
-EDGE_COUNTER = 0
+from resourceNew.xmlmapper.ogc.capabilities.service import OperationUrl
+from resourceNew.models.ogcservice import Layer
 
 
 class LegendUrlConverter(DBModelConverter):

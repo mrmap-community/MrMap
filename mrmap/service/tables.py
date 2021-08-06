@@ -19,7 +19,7 @@ from main.tables.template_code import RECORD_ABSOLUTE_LINK_VALUE_CONTENT, VALUE_
 from monitoring.settings import WARNING_RELIABILITY, CRITICAL_RELIABILITY
 from service.helper.enums import MetadataEnum, OGCServiceEnum
 from service.models import MetadataRelation, Metadata, FeatureTypeElement, ProxyLog, MapContext
-from service.templatecodes import SERVICE_TABLE_ACTIONS, MAP_CONTEXT_TABLE_ACTIONS
+from service.templatecodes import MAP_CONTEXT_TABLE_ACTIONS
 from guardian.core import ObjectPermissionChecker
 
 
@@ -73,12 +73,6 @@ class OgcServiceTable(tables.Table):
                                               empty_values=[],
                                               accessor='harvest_results__first')
 
-    actions = tables.TemplateColumn(verbose_name=_('Actions'),
-                                    empty_values=[],
-                                    orderable=False,
-                                    template_code=SERVICE_TABLE_ACTIONS,
-                                    attrs={"td": {"style": "white-space:nowrap;"}},
-                                    extra_context={'perm_checker': perm_checker})
 
     class Meta:
         model = Metadata

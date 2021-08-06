@@ -192,7 +192,6 @@ class CommonInfo(models.Model):
 
     def __init__(self, *args, **kwargs):
         super(CommonInfo, self).__init__(*args, **kwargs)
-        # self._owned_by_org_id = self.owned_by_org_id
 
     def save(self, update_last_modified=True, *args, **kwargs):
         if self._state.adding:

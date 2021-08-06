@@ -3,7 +3,7 @@ from django.db.models import F, Value
 from django.http import HttpResponse, Http404
 from django.views.generic import DetailView
 
-from resourceNew.models import DatasetMetadata, ServiceMetadata, LayerMetadata, FeatureTypeMetadata, Service, Layer, \
+from resourceNew.models import DatasetMetadata, ServiceMetadata, LayerMetadata, FeatureTypeMetadata, OgcService, Layer, \
     FeatureType
 
 
@@ -23,8 +23,8 @@ class GenericXmlRepresentationView(DetailView):
 
 
 class ServiceXmlView(GenericXmlRepresentationView):
-    model = Service
-    queryset = Service.objects.all().annotate(do_camouflage=F('proxy_setting__camouflage'))
+    model = OgcService
+    queryset = OgcService.objects.all().annotate(do_camouflage=F('proxy_setting__camouflage'))
 
 
 class LayerXmlView(GenericXmlRepresentationView):

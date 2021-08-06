@@ -9,7 +9,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MrMap.settings_docker")
 import django
 django.setup()
 
-from resourceNew.models.service import Service as DbService
+from resourceNew.models.ogcservice import OgcServiceClient as DbService
 from resourceNew.models import RemoteMetadata
 from resourceNew.tasks.service import schedule_collect_linked_metadata
 from resourceNew.parsers.iso.iso_metadata import WrappedIsoMetadata

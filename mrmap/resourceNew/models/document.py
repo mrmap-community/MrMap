@@ -20,6 +20,7 @@ class DocumentModelMixin(models.Model):
     """
     xml_mapper_cls = None
     xml_backup_file = models.FileField(verbose_name=_("xml backup"),
+                                       editable=False,
                                        help_text=_("the original xml as backup to restore the xml field."),
                                        upload_to=xml_backup_file_path)
 

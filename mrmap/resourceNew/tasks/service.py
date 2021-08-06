@@ -5,10 +5,11 @@ from requests.auth import HTTPDigestAuth
 
 from MrMap.settings import PROXIES
 from resourceNew.enums.service import AuthTypeEnum
-from resourceNew.models import Service as DbService, FeatureType, DatasetMetadata
+from resourceNew.models import OgcServiceClient as DbService, FeatureType, DatasetMetadata, OgcWms
 from resourceNew.models import RemoteMetadata
 from resourceNew.models.security import ExternalAuthentication
 from job.tasks import NewJob, CurrentTask
+from resourceNew.services.register_service import RegisterOgcWmsService
 from resourceNew.xmlmapper.ogc.capabilities.factory import OgcServiceXml
 from structure.enums import PendingTaskEnum
 from django.db import transaction
@@ -20,14 +21,26 @@ from django.conf import settings
              bind=True,
              base=NewJob)
 def register_service(self,
-                     form: dict,
+                     service_pk,
                      quantity: int = 1,
                      **kwargs):
     # todo: create task objects here and pass them to the three tasks
-    workflow = chain(create_service_from_parsed_service.s(form, quantity, **kwargs) |
+    workflow = chain(build_full_wms_service_task.s(service_pk, quantity, **kwargs) |
                         group(schedule_collect_feature_type_elements.s(**kwargs) |
                               schedule_collect_linked_metadata.s(**kwargs))
                      )
+    workflow.apply_async()
+    return self.job.pk
+
+
+@shared_task(name="async_register_ogc_wms",
+             bind=True,
+             base=NewJob)
+def register_ogc_wms(self,
+                     service_pk,
+                     **kwargs):
+    workflow = chain(build_full_wms_service_task.s(service_pk, **kwargs) |
+                     schedule_collect_linked_metadata.s(**kwargs))
     workflow.apply_async()
     return self.job.pk
 
@@ -190,6 +203,38 @@ def parse_remote_metadata_xml_for_service(self,
         self.task.phase = f'Done. <a href="{reverse("resourceNew:dataset_metadata_list")}?id__in={",".join(str(pk) for pk in dataset_list)}">dataset metadata</a>'
         self.task.save()
     return successfully_list
+
+
+@shared_task(name="async_build_full_wms_service",
+             bind=True,
+             base=CurrentTask)
+def build_full_wms_service_task(self,
+                                service_pk,
+                                **kwargs):
+    if self.task:
+        self.task.status = PendingTaskEnum.STARTED.value
+        self.task.phase = "download capabilities document..."
+        self.task.started_at = timezone.now()
+        self.task.save()
+
+    db_service = OgcWms.objects.get(pk=service_pk)
+    db_service.download_capability_doc()
+
+    if self.task:
+        self.task.phase = "building wms..."
+        self.task.progress = 1/2
+        self.task.save()
+
+    RegisterOgcWmsService.register_service_from_local(db_service=db_service)
+
+    if self.task:
+        self.task.phase = f'Done. <a href="{db_service.get_absolute_url()}">{db_service}</a>'
+        self.task.status = PendingTaskEnum.SUCCESS.value
+        self.task.progress = 100
+        self.task.done_at = timezone.now()
+        self.task.save()
+
+    return db_service.pk
 
 
 @shared_task(name="async_create_service_from_parsed_service",

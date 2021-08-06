@@ -16,7 +16,7 @@ from resourceNew.enums.security import EntityUnits
 from resourceNew.enums.service import OGCOperationEnum, AuthTypeEnum, OGCServiceEnum
 from MrMap.validators import geometry_is_empty, validate_get_capablities_uri
 from resourceNew.managers.security import AllowedOperationManager, AnalyzedResponseLogTableManager
-from resourceNew.models import Service, Layer, FeatureType
+from resourceNew.models import OgcService, Layer, FeatureType
 from cryptography.fernet import Fernet
 import time
 from resourceNew.tasks.security import async_analyze_log
@@ -28,7 +28,7 @@ def key_file_path(instance, filename):
 
 
 class ExternalAuthentication(GenericModelMixin, CommonInfo):
-    secured_service = models.OneToOneField(to=Service,
+    secured_service = models.OneToOneField(to=OgcService,
                                            on_delete=models.CASCADE,
                                            related_name="external_authentication",
                                            related_query_name="external_authentication",
@@ -227,7 +227,7 @@ class AllowedOperation(GenericModelMixin, CommonInfo):
     allowed_area = models.MultiPolygonField(null=True,
                                             blank=True,
                                             validators=[geometry_is_empty])
-    secured_service = models.ForeignKey(to=Service,
+    secured_service = models.ForeignKey(to=OgcService,
                                         on_delete=models.CASCADE,
                                         related_name="allowed_operations",
                                         related_query_name="allowed_operation",
@@ -271,7 +271,7 @@ class AllowedOperation(GenericModelMixin, CommonInfo):
 
 
 class ProxySetting(GenericModelMixin, CommonInfo):
-    secured_service = models.OneToOneField(to=Service,
+    secured_service = models.OneToOneField(to=OgcService,
                                            on_delete=models.CASCADE,
                                            related_name="proxy_setting",
                                            related_query_name="proxy_setting",
@@ -328,7 +328,7 @@ class HttpRequestLog(models.Model):
     url = models.URLField(max_length=4096)
     body = models.FileField(upload_to=request_body_path, max_length=1024)
     headers = models.JSONField(default=dict)
-    service = models.ForeignKey(to=Service,
+    service = models.ForeignKey(to=OgcService,
                                 on_delete=models.PROTECT,
                                 related_name="http_request_logs",
                                 related_query_name="http_request_log")

@@ -170,9 +170,8 @@ class SecuredDeleteView(LoginRequiredMixin,
             return super().get_success_message()
 
     def get_success_url(self):
-        model_instance = self.model()
         if not self.success_url:
-            return reverse_lazy(f'{model_instance._meta.app_label}:{camel_to_snake(model_instance.__class__.__name__)}_list')
+            return self.model.get_table_url()
         else:
             return super().get_success_url()
 

@@ -14,8 +14,10 @@ class Wms130RemoteMetadata(RemoteMetadata):
     ROOT_NAMESPACES = dict([("xlink", XLINK_NAMESPACE),
                             ("default", WMS_1_3_0_NAMESPACE)])
     ROOT_NS = "default"
+    ignore_fields = ["mime_type"]
+
     mime_type = xmlmap.StringField(xpath="default:Format")
-    link = xmlmap.StringField(xpath="default:OnlineResource/@xlink=href")
+    link = xmlmap.StringField(xpath="default:OnlineResource/@xlink:href")
 
 
 class Wms130ReferenceSystem(ReferenceSystem):
@@ -124,19 +126,6 @@ class Wms130CapabilitiesConverter(Wms130OperationUrlsMixin, OgcServiceCapabiliti
                             ("inspire_vs", INSPIRE_VS_NAMESPACE),
                             ("xlink", XLINK_NAMESPACE)])
     XSD_SCHEMA = "http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd"
-    ignore_fields = ["version"]
     url = xmlmap.StringField(xpath="default:Service/default:OnlineResource[@xlink:type='simple']/@xlink:href")
     service_metadata = xmlmap.NodeField(xpath="default:Service", node_class=Wms130ServiceMetadata)
     root_layer = xmlmap.NodeField(xpath="default:Capability/default:Layer", node_class=Wms130LayerConverter)
-
-
-
-def test():
-
-    file = "ejkfbjkaf.xml"
-    xmlobject = xmlmap.load_xmlobject_from_file(filename=file, xmlclass=Wms130CapabilitiesConverter)
-    xmlobject.url
-    xmlobject.root_layer
-
-    capabalities = Wms130CapabilitiesConverter()
-

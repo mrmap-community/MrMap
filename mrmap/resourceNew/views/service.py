@@ -1,6 +1,6 @@
 from django.db.models import ExpressionWrapper, BooleanField, Q, Count
 from django.http import HttpResponse
-from extra_views import UpdateWithInlinesView
+from extra_views import UpdateWithInlinesView, CreateWithInlinesView
 from guardian.core import ObjectPermissionChecker
 from MrMap.icons import get_icon, IconEnum
 from job.models import Job
@@ -10,25 +10,26 @@ from resourceNew.formsets.service import ExternalAuthenticationInline, ProxySett
 from resourceNew.tasks import service as service_tasks
 from resourceNew.enums.service import OGCServiceEnum
 from resourceNew.filtersets.service import LayerFilterSet, FeatureTypeFilterSet, FeatureTypeElementFilterSet, \
-    ServiceFilterSet
-from resourceNew.forms.service import RegisterServiceForm, ServiceModelForm, LayerModelForm
-from resourceNew.models import Service, Layer, FeatureType, FeatureTypeElement, WfsService, WmsService
+    ServiceFilterSet, OgcWmsFilterSet
+from resourceNew.forms.service import RegisterServiceForm, ServiceModelForm, LayerModelForm, CreateOgcWmsModelForm, \
+    UpdateOgcWmsModelForm
+from resourceNew.models import OgcServiceClient, Layer, FeatureType, FeatureTypeElement, OgcWfs, OgcWms, \
+    OgcService, OgcCsw
 from django.urls import reverse_lazy
 from django_filters.views import FilterView
 from django.utils.translation import gettext
-from resourceNew.tables.service import ServiceTable, LayerTable, FeatureTypeTable, FeatureTypeElementTable
+from resourceNew.tables.service import ServiceTable, LayerTable, FeatureTypeTable, FeatureTypeElementTable, OgcWmsTable
 
 
 class WmsListView(SecuredListMixin, FilterView):
-    model = WmsService
-    table_class = ServiceTable
-    filterset_class = ServiceFilterSet
-    title = get_icon(IconEnum.WMS) + gettext(" Web Map Services")
+    model = OgcWms
+    table_class = OgcWmsTable
+    filterset_class = OgcWmsFilterSet
     queryset = model.objects.for_table_view()
 
 
 class WfsListView(SecuredListMixin, FilterView):
-    model = WfsService
+    model = OgcWfs
     table_class = ServiceTable
     filterset_class = ServiceFilterSet
     title = get_icon(IconEnum.WFS) + gettext(" Web Feature Services")
@@ -57,7 +58,7 @@ class FeatureTypeElementListView(SecuredListMixin, FilterView):
 
 
 class ServiceXmlView(SecuredDetailView):
-    model = Service
+    model = OgcServiceClient
     content_type = "application/xml"
 
     def render_to_response(self, context, **response_kwargs):
@@ -66,9 +67,9 @@ class ServiceXmlView(SecuredDetailView):
 
 
 class ServiceWmsTreeView(SecuredDetailView):
-    model = WmsService
+    model = OgcWms
     template_name = 'resourceNew/service/views/wms_tree.html'
-    queryset = WmsService.objects.for_tree_view()
+    queryset = OgcWms.objects.for_tree_view()
     extra_context = {'tree_style': True}
 
     def get_context_data(self, **kwargs):
@@ -92,9 +93,9 @@ class ServiceWmsTreeView(SecuredDetailView):
 
 
 class ServiceWfsTreeView(SecuredDetailView):
-    model = WfsService
+    model = OgcWfs
     template_name = 'resourceNew/service/views/wfs_tree.html'
-    queryset = WfsService.objects.for_tree_view()
+    queryset = OgcWfs.objects.for_tree_view()
     extra_context = {'tree_style': True}
 
     def get_context_data(self, **kwargs):
@@ -138,17 +139,40 @@ class RegisterServiceFormView(SecuredFormView):
         return super().form_valid(form=form)
 
 
+# todo: implement a secured CreateWithInlinesView version
+class OgcWmsCreateView(CreateWithInlinesView):
+    model = OgcWms
+    inlines = [ExternalAuthenticationInline]
+    form_class = CreateOgcWmsModelForm
+    #update_query_string = True
+    template_name = "MrMap/detail_views/generic_form.html"
+
+    def get_success_url(self):
+        return self.model.get_table_url()
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({"request": self.request})
+        return kwargs
+
+
+class OgcWmsActivateView(SecuredUpdateView):
+    model = OgcWms
+    form_class = UpdateOgcWmsModelForm
+    update_query_string = True
+
+
 class ServiceActivateView(SecuredUpdateView):
-    model = Service
+    model = OgcService
     form_class = ServiceModelForm
     update_query_string = True
 
 
 # todo: implement a secured UpdateWithInlinesView version
-class ServiceUpdateView(UpdateWithInlinesView):
-    model = Service
+class OgcWmsUpdateView(UpdateWithInlinesView):
+    model = OgcWms
     inlines = [ExternalAuthenticationInline, ProxySettingInline]
-    form_class = ServiceModelForm
+    form_class = UpdateOgcWmsModelForm
     #update_query_string = True
     template_name = "MrMap/detail_views/generic_form.html"
 
@@ -158,17 +182,16 @@ class ServiceUpdateView(UpdateWithInlinesView):
         return kwargs
 
 
-class ServiceDeleteView(SecuredDeleteView):
-    model = Service
+class OgcWmsDeleteView(SecuredDeleteView):
+    model = OgcWms
 
-    def get_success_url(self):
-        model_instance = self.model()
-        if self.object.service_type_name == OGCServiceEnum.WMS.value:
-            return reverse_lazy(f'{model_instance._meta.app_label}:{camel_to_snake(model_instance.__class__.__name__)}_wms_list')
-        elif self.object.service_type_name == OGCServiceEnum.WFS.value:
-            return reverse_lazy(f'{model_instance._meta.app_label}:{camel_to_snake(model_instance.__class__.__name__)}_wfs_list')
-        elif self.object.service_type_name == OGCServiceEnum.CSW.value:
-            return reverse_lazy(f'{model_instance._meta.app_label}:{camel_to_snake(model_instance.__class__.__name__)}_csw_list')
+
+class OgcWfsDeleteView(SecuredDeleteView):
+    model = OgcWfs
+
+
+class OgcCswDeleteView(SecuredDeleteView):
+    model = OgcCsw
 
 
 class LayerUpdateView(SecuredUpdateView):
@@ -184,7 +207,7 @@ class FeatureTypeUpdateView(SecuredUpdateView):
 
 
 class CswListView(SecuredListMixin, FilterView):
-    model = Service
+    model = OgcCsw
     table_class = ServiceTable
     filterset_class = ServiceFilterSet
     title = get_icon(IconEnum.CSW) + gettext(" Catalogue Web Service")

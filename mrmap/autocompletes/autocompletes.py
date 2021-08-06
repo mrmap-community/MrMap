@@ -9,7 +9,7 @@ from guardian.shortcuts import get_objects_for_user
 
 from acl.models.acl import AccessControlList
 from monitoring.models import MonitoringRun, MonitoringResult, HealthState
-from resourceNew.models import Service, Layer, FeatureType
+from resourceNew.models import OgcServiceClient, Layer, FeatureType
 from service.helper.enums import MetadataEnum
 from service.models import Category, Metadata
 from structure.models import Organization
@@ -54,7 +54,7 @@ class CategoryAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView)
 
 
 class ServiceAutocomplete(SecuredAutocompleteMixin, LoginRequiredMixin, autocomplete.Select2QuerySetView):
-    model = Service
+    model = OgcServiceClient
     search_fields = ['metadata__title', 'id']
 
 

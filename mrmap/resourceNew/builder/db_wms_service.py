@@ -1,10 +1,13 @@
 from abc import ABC, abstractmethod
+from collections import Iterable
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, Max
+from django.db.models.functions import Coalesce
 
-from resourceNew.models import Service, Keyword, Layer, LayerMetadata, ReferenceSystem, RemoteMetadata, \
-    MimeType, Style, LegendUrl, OperationUrl, MetadataContact
+from resourceNew.models import Keyword, Layer, LayerMetadata, ReferenceSystem, RemoteMetadata, \
+    MimeType, Style, LegendUrl, OperationUrl, OgcWms
 
 
 class AbstractOgcDbServiceBuilder(ABC):
@@ -23,14 +26,18 @@ class AbstractOgcDbServiceBuilder(ABC):
     _m2m_relations = []  # tuple of (instance, "field_name", QuerySet/list)
     _fk_relations = []  # tuple of (instance, "field_name", model instance) to store delayed fk relations
 
-    def __init__(self, proto_service) -> None:
+    _layer_content_type = ContentType.objects.get_for_model(Layer)
+    _wms_service_content_type = ContentType.objects.get_for_model(OgcWms)
+
+    def __init__(self, proto_service, db_service=None) -> None:
         """A fresh builder instance should contain a blank service object, which is
         used in further assembly.
         """
         self._proto_service = proto_service
-        self.reset()
+        self.reset(db_service=db_service)
 
-    def reset(self) -> None:
+    def reset(self, db_service=None, *args, **kwargs) -> None:
+        self._service = db_service
         self._service_metadata = None
         self._metadata_contact = None
         self._operation_urls = []
@@ -49,7 +56,8 @@ class AbstractOgcDbServiceBuilder(ABC):
 
     def construct_service(self) -> None:
         """Convert the proto_service to model instance and store it in private variable."""
-        self._service = self._proto_service.convert_to_model()
+        if not self._service:
+            self._service = self._proto_service.convert_to_model()
 
     def construct_service_metadata_contact(self) -> None:
         self._metadata_contact = self._proto_service.service_metadata.service_contact.convert_to_model()
@@ -61,17 +69,15 @@ class AbstractOgcDbServiceBuilder(ABC):
         self._service_metadata.metadata_contact = self._metadata_contact
         self._service_metadata.service_contact = self._metadata_contact
 
-
-
     def construct_service_metadata_keywords(self) -> None:
         """Convert the proto_service_metadata__keywords to model instance."""
         self.construct_keywords(db_obj=self._service_metadata, keywords=self._proto_service.service_metadata.keywords)
 
     def construct_remote_service_metadata(self) -> None:
         """Convert the proto_service_metadata__remote_metadata to model instance and store it in private variable."""
-        self.construct_remote_metadata(remote_metadata=self._proto_service.remote_metadata,
+        self.construct_remote_metadata(remote_metadata_list=self._proto_service.remote_metadata,
                                        service=self._service,
-                                       content_type=Service,
+                                       content_type=self._wms_service_content_type,
                                        object_id=self._service.pk)
 
     def construct_operation_urls(self) -> None:
@@ -121,19 +127,19 @@ class AbstractOgcDbServiceBuilder(ABC):
                 if not f"{_reference_system.prefix}:{_reference_system.code}" in self._reference_systems:
                     self._reference_systems.update({f"{_reference_system.prefix}:{_reference_system.code}": _reference_system})
                 _reference_system_query |= Q(prefix=_reference_system.prefix, code=_reference_system.code)
-            self._m2m_relations.append((db_obj, "keywords", ReferenceSystem.objects.filter(_reference_system_query)))
+            self._m2m_relations.append((db_obj, "reference_systems", ReferenceSystem.objects.filter(_reference_system_query)))
 
-    def construct_remote_metadata(self, remote_metadata, service, content_type, object_id):
+    def construct_remote_metadata(self, remote_metadata_list, service, content_type, object_id):
         """Generic method to convert proto_remote_metadata to model instance and store them in private list variable."""
-        if remote_metadata:
-            if not isinstance(remote_metadata, list):
-                remote_metadata = [remote_metadata]
-            for __remote_metadata in remote_metadata:
-                _remote_metadata = __remote_metadata.convert_to_model()
-                _remote_metadata.service = service
-                _remote_metadata.content_type = content_type
-                _remote_metadata.object_id = object_id
-                self._remote_metadata_list.append(_remote_metadata)
+        if remote_metadata_list:
+            if not isinstance(remote_metadata_list, Iterable):
+                remote_metadata_list = [remote_metadata_list]
+            for remote_metadata in remote_metadata_list:
+                db_remote_metadata = remote_metadata.convert_to_model()
+                db_remote_metadata.service = service
+                db_remote_metadata.content_type = content_type
+                db_remote_metadata.object_id = object_id
+                self._remote_metadata_list.append(db_remote_metadata)
 
     def persist_service(self) -> None:
         """Persist the constructed service instance."""
@@ -157,12 +163,12 @@ class AbstractOgcDbServiceBuilder(ABC):
 
     def persist_reference_systems(self) -> None:
         """Persist all constructed reference systems in get_or_create mode."""
-        for reference_system in self._reference_systems.items():
+        for key, reference_system in self._reference_systems.items():
             ReferenceSystem.objects.get_or_create(prefix=reference_system.prefix, code=reference_system.code)
 
     def persist_mime_types(self) -> None:
         """Persist all constructed mime types in get_or_create mode."""
-        for mime_type in self._mime_types.items():
+        for key, mime_type in self._mime_types.items():
             MimeType.objects.get_or_create(mime_type=mime_type.mime_type)
 
     def persist_remote_metadata(self) -> None:
@@ -188,26 +194,32 @@ class WmsDbBuilder(AbstractOgcDbServiceBuilder):
     """
     _proto_service = None
     _edge_counter = 0
+    _layers = []
+    _layer_metadata = []
+    _styles = []
+    _legend_urls = []
+    _tree_id = -1
 
-    def reset(self) -> None:
+    def reset(self, *args, **kwargs) -> None:
         """Reset all local variables the construct (non persisted) a new service instance."""
-        super().reset()
+        super().reset(*args, **kwargs)
         self._edge_counter = 0
         self._layers = []
         self._layer_metadata = []
         self._styles = []
         self._legend_urls = []
+        self._tree_id = Layer.objects.filter(parent=None).aggregate(next_tree_id=Coalesce(Max('tree_id')+1, 1)).get("next_tree_id")
 
         # todo
         #  db_dimension_list = []
         #  db_dimension_extent_list = []
 
     @property
-    def service(self) -> Service:
+    def service(self) -> OgcWms:
         """Return the fetched Service object from database and reset the builder."""
         service_pk = self._service.pk
         self.reset()
-        return Service.objects.get_full_service(pk=service_pk)
+        return OgcWms.objects.get_full_service(pk=service_pk)
 
     def _construct_layer_and_related(self, layer, db_parent, level):
         self._edge_counter += 1
@@ -217,31 +229,27 @@ class WmsDbBuilder(AbstractOgcDbServiceBuilder):
         db_layer.parent = db_parent
         db_layer.level = level
         db_layer.lft = self._edge_counter
+        db_layer.tree_id = self._tree_id
         self._layers.append(db_layer)
 
-        layer_metadata = layer.layer_metadata.convert_to_model()
-        layer_metadata.described_object = db_layer
-        self._layer_metadata.append(layer_metadata)
+        db_layer_metadata = layer.layer_metadata.convert_to_model()
+        db_layer_metadata.described_object = db_layer
+        self._layer_metadata.append(db_layer_metadata)
 
         self.construct_reference_systems(db_obj=db_layer,
                                          reference_systems=layer.reference_systems)
 
-        self.construct_keywords(db_obj=self._layer_metadata,
+        self.construct_keywords(db_obj=db_layer_metadata,
                                 keywords=layer.layer_metadata.keywords)
 
-        self.construct_remote_metadata(remote_metadata=layer.remote_metadata,
+        self.construct_remote_metadata(remote_metadata_list=layer.remote_metadata,
                                        service=self._service,
                                        object_id=db_layer.pk,
-                                       content_type=Layer)
+                                       content_type=self._layer_content_type)
         return db_layer
 
     def traverse_layer_tree(self, parent, db_parent, level=0):
         """Recursive function to traverse all descendant layers."""
-
-        self._edge_counter += 1
-        self.left = self._edge_counter
-
-        self.level = level
         root_layer_trip = False
         if not parent:
             root_layer_trip = True
@@ -249,14 +257,12 @@ class WmsDbBuilder(AbstractOgcDbServiceBuilder):
             db_parent = self._construct_layer_and_related(layer=self._proto_service.root_layer,
                                                           db_parent=None,
                                                           level=level)
-
         for child_layer in parent.children:
             _db_parent = self._construct_layer_and_related(layer=child_layer, db_parent=db_parent, level=level+1 if root_layer_trip else level)
             if child_layer.children:
                 self.traverse_layer_tree(parent=child_layer, db_parent=_db_parent, level=level+1)
-            else:
-                self._edge_counter += 1
-                _db_parent.rght = self._edge_counter
+            self._edge_counter += 1
+            _db_parent.rght = self._edge_counter
         if root_layer_trip:
             self._edge_counter += 1
             db_parent.rght = self._edge_counter
@@ -289,6 +295,8 @@ class WmsDbBuilder(AbstractOgcDbServiceBuilder):
     def persist_layers(self) -> None:
         """Persist all constructed layer instances in bulk mode."""
         Layer.objects.bulk_create(objs=self._layers)
+        # ToDo: check if we really need to rebuild the tree if we always setup lft, rght, level and tree id correctly
+        Layer.objects.partial_rebuild(tree_id=self._tree_id)
 
     def persist_layer_metadata(self) -> None:
         """Persist all constructed layer metadata instances in bulk mode."""

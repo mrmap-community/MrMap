@@ -3,12 +3,12 @@ from django.urls import reverse_lazy
 from job.models import Job
 from main.views import SecuredFormView
 from resourceNew.forms.harvest import StartHarvest
-from resourceNew.models import Service
+from resourceNew.models import OgcServiceClient
 from resourceNew.tasks import harvest as harvest_tasks
 
 
 class HarvestServiceFormView(SecuredFormView):
-    model = Service
+    model = OgcServiceClient
     action = "add"
     form_class = StartHarvest
     template_name = 'MrMap/detail_views/generic_form.html'

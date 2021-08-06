@@ -34,8 +34,17 @@ class WmsManager(models.Manager):
     """Provide the creation/resolving of a full service."""
 
     def get_full_service(self, *args, **kwargs):
-        return self.get_queryset().select_related("service_metadata",
-                                                  ).prefetch_related().get(*args, **kwargs)
+        return self.get_queryset().select_related("metadata",
+                                                  "metadata__metadata_contact",
+                                                  "metadata__service_contact",
+                                                  "external_authentication",
+                                                  "proxy_setting",)\
+                                   .prefetch_related("metadata__keywords",
+                                                     "layers",
+                                                     "layers__metadata",
+                                                     "layers__metadata__keywords",
+                                                     "layers__reference_systems",)\
+                                   .get(*args, **kwargs)
 
     def from_proto_service(self, proto_service, *args, **kwargs):
         """Build a service object
@@ -49,8 +58,7 @@ class WmsManager(models.Manager):
         return builder.service
 
     def for_table_view(self):
-        return self.get_queryset().select_related("service_type",
-                                                  "metadata",
+        return self.get_queryset().select_related("metadata",
                                                   "metadata__service_contact",
                                                   "metadata__metadata_contact",
                                                   "created_by_user",
@@ -103,7 +111,6 @@ class LayerManager(TreeManager):
             .annotate(children_count=Count("child", distinct=True))\
             .annotate(dataset_metadata_count=Count("dataset_metadata_relation", distinct=True))\
             .select_related("service",
-                            "service__service_type",
                             "service__metadata",
                             "parent",
                             "parent__metadata",

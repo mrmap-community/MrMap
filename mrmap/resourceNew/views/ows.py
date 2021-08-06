@@ -15,7 +15,7 @@ from MrMap.messages import SERVICE_NOT_FOUND, SECURITY_PROXY_ERROR_MISSING_REQUE
     SECURITY_PROXY_ERROR_MISSING_VERSION_TYPE, SECURITY_PROXY_ERROR_MISSING_SERVICE_TYPE
 from MrMap.settings import PROXIES
 from resourceNew.enums.service import OGCServiceEnum
-from resourceNew.models import Service
+from resourceNew.models import OgcServiceClient
 from resourceNew.models.security import HttpRequestLog, HttpResponseLog
 from resourceNew.ows_client.exception_reports import NO_FEATURE_TYPES, MULTIPLE_FEATURE_TYPES
 from resourceNew.ows_client.exceptions import MissingBboxParam, MissingServiceParam, MissingVersionParam
@@ -68,7 +68,7 @@ class GenericOwsServiceOperationFacade(View):
         except (MissingBboxParam, MissingServiceParam):
             request.bbox = GEOSGeometry('POLYGON EMPTY')
 
-        self.service = Service.security.construct_service(pk=self.kwargs.get("pk"), request=request)
+        self.service = OgcServiceClient.security.construct_service(pk=self.kwargs.get("pk"), request=request)
 
         if self.service:
             try:

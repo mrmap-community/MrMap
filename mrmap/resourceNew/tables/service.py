@@ -1,36 +1,14 @@
 import django_tables2 as tables
 from django.urls import reverse
 from django.utils.html import format_html
-from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
-
 from main.tables.tables import SecuredTable
 from main.tables.template_code import RECORD_ABSOLUTE_LINK_VALUE_CONTENT, VALUE_ABSOLUTE_LINK, \
-    SERVICE_STATUS_ICONS, SERVICE_HEALTH_ICONS, OPERATION_URLS
-from monitoring.settings import WARNING_RELIABILITY, CRITICAL_RELIABILITY
-from resourceNew.enums.service import OGCServiceEnum
-from resourceNew.models import Service, Layer, FeatureType, FeatureTypeElement
+    SERVICE_STATUS_ICONS, OPERATION_URLS
+from resourceNew.models import Layer, FeatureType, FeatureTypeElement, OgcWms
 from resourceNew.tables.template_codes import SERVICE_DETAIL_ICONS, LAYER_FEATURE_TYPE_DETAIL_ICONS, \
     FEATURE_TYPE_ELEMENT_DETAIL_ICONS, LAYER_TABLE_ACTIONS, FEATURE_TYPE_TABLE_ACTIONS
-from service.helper.enums import MetadataEnum
-from service.templatecodes import SERVICE_TABLE_ACTIONS
-from guardian.core import ObjectPermissionChecker
-from django.db.models import QuerySet
-
-TOOLTIP_TITLE = _('The resource title')
-TOOLTIP_ACTIVE = _('Shows whether the resource is active or not.')
-TOOLTIP_SECURED_ACCESS = _('Shows whether the resource is only accessible for certain groups and/or in certain areas.')
-TOOLTIP_SECURED_EXTERNALLY = _('Shows whether the resource needs authentication to its origin server.')
-TOOLTIP_VERSION = _('The resource version')
-TOOLTIP_DATA_PROVIDER = _('The organization which provides the resource.')
-TOOLTIP_REGISTERED_BY_GROUP = _('The group which registered the resource.')
-TOOLTIP_REGISTERED_FOR = _('The organization for which the resource is registered.')
-TOOLTIP_CREATED_ON = _('The registration date.')
-TOOLTIP_ACTIONS = _('Performable Actions')
-TOOLTIP_STATUS = _(
-    'Shows the status of the resource. You can see active state, secured access state and secured externally state.')
-TOOLTIP_HEALTH = _('Shows the health status of the resource.')
-TOOLTIP_VALIDATION = _('Shows the validation status of the resource')
+from service.templatecodes import OGC_WMS_TABLE_ACTIONS
 
 
 class ServiceTable(SecuredTable):
@@ -55,22 +33,29 @@ class ServiceTable(SecuredTable):
                                     accessor="")"""
     owner = tables.TemplateColumn(template_code=VALUE_ABSOLUTE_LINK,
                                   accessor='owned_by_org')
+
+
+    def render_feature_types_count(self, record, value):
+        link = f'<a href="{reverse("resourceNew:feature_type_list")}?service__id__in={record.pk}">{value}</a>'
+        return format_html(link)
+
+
+class OgcWmsTable(ServiceTable):
+    perm_checker = None
     actions = tables.TemplateColumn(verbose_name=_('Actions'),
                                     empty_values=[],
                                     orderable=False,
-                                    template_code=SERVICE_TABLE_ACTIONS,
+                                    template_code=OGC_WMS_TABLE_ACTIONS,
                                     attrs={"td": {"style": "white-space:nowrap;"}},
                                     extra_context={'perm_checker': perm_checker})
 
     class Meta:
-        model = Service
+        model = OgcWms
         fields = ("title",
                   "status_icons",
                   "details",
                   "layers_count",
-                  "feature_types_count",
-                  "service_type__version",
-                  #'service__service_type__version',
+                  "version",
 
                   #'contact',
                   "operation_urls__all",
@@ -78,14 +63,10 @@ class ServiceTable(SecuredTable):
                   'owner',
                   'actions',
                   )
-        prefix = 'ogc-service-table'
+        prefix = 'ogc-wms-table'
 
     def render_layers_count(self, record, value):
         link = f'<a href="{reverse("resourceNew:layer_list")}?service__id__in={record.pk}">{value}</a>'
-        return format_html(link)
-
-    def render_feature_types_count(self, record, value):
-        link = f'<a href="{reverse("resourceNew:feature_type_list")}?service__id__in={record.pk}">{value}</a>'
         return format_html(link)
 
 
@@ -134,7 +115,7 @@ class LayerTable(SecuredTable):
         return format_html(f'<a href="{reverse("resourceNew:layer_list")}?id__in={value.pk}">{value}</a>')
 
     def render_service(self, value):
-        return format_html(f'<a href="{reverse("resourceNew:service_wms_list")}?id={value.pk}">{value}</a>')
+        return format_html(f'<a href="{reverse("resourceNew:ogc_wms_list")}?id={value.pk}">{value}</a>')
 
 
 class FeatureTypeTable(SecuredTable):

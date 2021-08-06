@@ -3,7 +3,7 @@ from main.forms import ModelForm
 from django import forms
 from main.widgets import TreeSelectMultiple
 from resourceNew.enums.service import OGCServiceEnum
-from resourceNew.models import Layer, FeatureType, Service
+from resourceNew.models import Layer, FeatureType, OgcService
 from resourceNew.models.security import AllowedOperation, ServiceAccessGroup, ProxySetting, ExternalAuthentication, \
     OGCOperation
 from leaflet.forms.widgets import LeafletWidget
@@ -13,7 +13,7 @@ from resourceNew.settings import SECURE_ABLE_WMS_OPERATIONS, SECURE_ABLE_WFS_OPE
 
 
 class ExternalAuthenticationModelForm(ModelForm):
-    secured_service = forms.ModelChoiceField(queryset=Service.objects.all(),
+    secured_service = forms.ModelChoiceField(queryset=OgcService.objects.all(),
                                              widget=forms.TextInput(attrs={'readonly': 'readonly'}))
 
     class Meta:
@@ -132,7 +132,7 @@ class AllowedOperationPage2ModelForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if "secured_service" in self.initial:
-            secured_service = Service.objects.select_related("service_type").get(pk=self.initial.get("secured_service"))
+            secured_service = OgcServiceClient.objects.select_related("service_type").get(pk=self.initial.get("secured_service"))
             ogc_operation_ac_url = None
             if secured_service.service_type_name == OGCServiceEnum.WMS.value:
                 self.fields.pop("secured_feature_types")

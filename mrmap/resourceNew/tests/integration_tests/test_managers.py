@@ -3,7 +3,7 @@ import os
 from eulxml import xmlmap
 
 from resourceNew.parsers.capabilities import Service as XmlService
-from resourceNew.models.service import Service as DbService
+from resourceNew.models.ogcservice import OgcServiceClient as DbService
 
 
 class ServiceXmlManagerTestCase(TestCase):

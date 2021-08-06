@@ -14,7 +14,7 @@ from resourceNew.enums.metadata import DatasetFormatEnum, MetadataCharset, Metad
 from resourceNew.managers.metadata import LicenceManager, IsoMetadataManager, DatasetManager, \
     DatasetMetadataRelationManager, AbstractMetadataManager
 from resourceNew.models.document import MetadataDocumentModelMixin
-from resourceNew.models.service import Layer, FeatureType, Service
+from resourceNew.models.ogcservice import Layer, FeatureType, OgcService
 from resourceNew.xmlmapper.iso_metadata.iso_metadata import WrappedIsoMetadata, MdMetadata
 from uuid import uuid4
 
@@ -204,7 +204,7 @@ class RemoteMetadata(CommonInfo):
     remote_content = models.TextField(null=True,
                                       verbose_name=_("remote content"),
                                       help_text=_("the fetched content of the download url."))
-    service = models.ForeignKey(to=Service,
+    service = models.ForeignKey(to=OgcService,
                                 on_delete=models.CASCADE,
                                 related_name="remote_metadata",
                                 related_query_name="remote_metadata",
@@ -252,7 +252,7 @@ class RemoteMetadata(CommonInfo):
 
     def create_metadata_instance(self):
         """ Return the created metadata record, based on the content_type of the described element. """
-        if isinstance(self.describes, Service):
+        if isinstance(self.describes, OgcService):
             metadata_cls = ServiceMetadata
         else:
             metadata_cls = DatasetMetadata
@@ -381,7 +381,7 @@ class ServiceMetadata(MetadataTermsOfUse, AbstractMetadata):
         OR to store the information of the parsed iso metadata which was linked in the capabilities document.
 
     """
-    described_object = models.OneToOneField(to=Service,
+    described_object = models.OneToOneField(to=OgcService,
                                             on_delete=models.CASCADE,
                                             editable=False,
                                             related_name="metadata",
@@ -472,7 +472,7 @@ class DatasetMetadataRelation(CommonInfo):
                                      blank=True,
                                      related_name="dataset_metadata_relations",
                                      related_query_name="dataset_metadata_relation")
-    service = models.ForeignKey(to=Service,
+    service = models.ForeignKey(to=OgcService,
                                 on_delete=models.CASCADE,
                                 null=True,  # nullable to support polymorph using in DatasetMetadata model
                                 blank=True,
@@ -675,7 +675,7 @@ class DatasetMetadata(MetadataTermsOfUse, AbstractMetadata):
                                                          verbose_name=_("feature types"),
                                                          help_text=_("all feature types which are linking to this "
                                                                      "dataset metadata in there capabilities."))
-    self_pointing_services = models.ManyToManyField(to=Service,
+    self_pointing_services = models.ManyToManyField(to=OgcService,
                                                     through=DatasetMetadataRelation,
                                                     editable=False,
                                                     related_name="dataset_metadata",
@@ -707,7 +707,7 @@ class DatasetMetadata(MetadataTermsOfUse, AbstractMetadata):
             kwargs.update({"feature_type": related_object,
                            "relation_type": relation_type if relation_type else MetadataRelationEnum.DESCRIBES.value,
                            "origin": origin if origin else MetadataOriginEnum.CAPABILITIES.value})
-        elif related_object._meta.model == Service:
+        elif related_object._meta.model == OgcService:
             kwargs.update({"service": related_object,
                            "relation_type": relation_type if relation_type else MetadataRelationEnum.HARVESTED_THROUGH.value,
                            "origin": origin if origin else MetadataOriginEnum.CATALOGUE.value})
@@ -725,7 +725,7 @@ class DatasetMetadata(MetadataTermsOfUse, AbstractMetadata):
             kwargs.update({"layer": related_object})
         elif related_object._meta.model == FeatureType:
             kwargs.update({"feature_type": related_object})
-        elif related_object._meta.model == Service:
+        elif related_object._meta.model == OgcService:
             kwargs.update({"service": related_object})
         DatasetMetadataRelation.objects.filter(
             from_metadata=self,

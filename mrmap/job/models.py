@@ -9,7 +9,7 @@ from django.urls import reverse
 
 
 class Job(CommonInfo):
-    """ Django model to represent a set of tasks. It gives a summery view of all tasks which are part of this job. """
+    """Django model to represent a set of tasks. It gives a summery view of all tasks which are part of this job."""
     name = models.CharField(max_length=256,
                             verbose_name=_("name"),
                             help_text=_("Describe what this job does."))

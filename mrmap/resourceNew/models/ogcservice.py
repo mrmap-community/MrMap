@@ -1,5 +1,8 @@
+from requests import Request
+
 from django.contrib.gis.geos import Polygon
-from django.db import models
+from django.core.files.base import ContentFile
+from django.db import models, transaction
 from django.contrib.gis.db import models as gis_models
 from django.db.models import QuerySet
 from django.utils.functional import cached_property
@@ -7,7 +10,10 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse, NoReverseMatch
 from requests import Session
 from requests.auth import HTTPDigestAuth
+
+from MrMap.validators import validate_get_capablities_uri
 from main.models import GenericModelMixin, CommonInfo
+from main.utils import camel_to_snake
 from resourceNew.enums.service import OGCServiceVersionEnum, HttpMethodEnum, OGCOperationEnum, \
     AuthTypeEnum
 from resourceNew.managers.security import OperationUrlManager
@@ -16,7 +22,7 @@ from resourceNew.managers.service import LayerManager, FeatureTypeElementXmlMana
 from mptt.models import MPTTModel, TreeForeignKey
 from uuid import uuid4
 from resourceNew.models.document import CapabilitiesDocumentModelMixin
-from resourceNew.ows_client.request_builder import OgcService
+from resourceNew.ows_client.request_builder import OgcServiceClient
 from resourceNew.xmlmapper.ogc.wfs_describe_feature_type import DescribedFeatureType as XmlDescribedFeatureType
 from eulxml import xmlmap
 from django.conf import settings
@@ -36,22 +42,29 @@ class CommonServiceInfo(models.Model):
         abstract = True
 
 
-class Service(CapabilitiesDocumentModelMixin, GenericModelMixin, CommonServiceInfo, CommonInfo):
+class OgcService(CapabilitiesDocumentModelMixin, GenericModelMixin, CommonServiceInfo, CommonInfo):
     id = models.UUIDField(primary_key=True,
                           default=uuid4,
                           editable=False)
-    url = models.URLField(max_length=4096,
-                          editable=False,
+    url = models.URLField(editable=False,
+                          max_length=4096,
                           verbose_name=_("url"),
                           help_text=_("the base url of the service"))
+    get_capabilities_url = models.URLField(validators=[validate_get_capablities_uri],
+                                           max_length=4096,
+                                           verbose_name=_("Capabilities URL"),
+                                           help_text=_("The concrete url where we can get the capabilities from."))
     version = models.CharField(max_length=10,
                                choices=OGCServiceVersionEnum.as_choices(),
                                editable=False,
                                verbose_name=_("version"),
                                help_text=_("the version of the service type as sem version"))
 
+    class Meta:
+        get_latest_by = "created_at"
+
     def __str__(self):
-        if self.metadata:
+        if hasattr(self, "metadata") and self.metadata:
             return f"{self.metadata.title} ({self.pk})"
         else:
             return str(self.pk)
@@ -60,7 +73,7 @@ class Service(CapabilitiesDocumentModelMixin, GenericModelMixin, CommonServiceIn
         adding = self._state.adding
         old = None
         if not adding:
-            old = WmsService.objects.filter(pk=self.pk).first()
+            old = OgcWms.objects.get(pk=self.pk)
         super().save(*args, **kwargs)
         if not adding and old and old.is_active != self.is_active:
             self.activate_routine()
@@ -71,7 +84,16 @@ class Service(CapabilitiesDocumentModelMixin, GenericModelMixin, CommonServiceIn
 
     def get_activate_url(self) -> str:
         try:
-            return reverse(f'{self._meta.app_label}:{self.__class__.__name__.lower()}_activate', args=[self.pk])
+            return reverse(f'{self._meta.app_label}:{camel_to_snake(self.__class__.__name__)}_activate', args=[self.pk])
+        except NoReverseMatch:
+            return ""
+
+    def get_absolute_url(self) -> str:
+        return self.get_concrete_table_url()
+
+    def get_tree_view_url(self) -> str:
+        try:
+            return reverse(f'{self._meta.app_label}:{camel_to_snake(self.__class__.__name__)}_tree_view', args=[self.pk])
         except NoReverseMatch:
             return ""
 
@@ -93,13 +115,30 @@ class Service(CapabilitiesDocumentModelMixin, GenericModelMixin, CommonServiceIn
             session.auth = self.external_authentication.get_auth_for_request()
         return session
 
+    def download_capability_doc(self) -> None:
+        session = self.get_session_for_request()
+        request = Request(method="GET",
+                          url=self.get_capabilities_url)
+        response = session.send(request.prepare())
+        self.xml_backup_file.save(name='capabilities.xml',
+                                  content=ContentFile(response.content))
 
-class WmsService(Service, CapabilitiesDocumentModelMixin, GenericModelMixin, CommonServiceInfo, CommonInfo):
+
+class OgcWms(OgcService):
     objects = WmsManager()
 
     class Meta:
         verbose_name = _("Web Map Service")
         verbose_name_plural = _("Web Map Services")
+
+    def save(self, *args, **kwargs):
+        adding = self._state.adding
+        super().save(*args, **kwargs)
+        if adding:
+            from resourceNew.tasks.service import register_ogc_wms
+            transaction.on_commit(lambda: register_ogc_wms(self.pk,
+                                                           **{"created_by_user_pk": self.created_by_user.pk,
+                                                              "owned_by_org_pk": self.owned_by_org.pk}))
 
     def activate_routine(self):
         # the active sate of this and all descendant elements shall be changed to the new value. Bulk update
@@ -111,7 +150,7 @@ class WmsService(Service, CapabilitiesDocumentModelMixin, GenericModelMixin, Com
         return self.layers.get(parent=None)
 
 
-class WfsService(Service, CapabilitiesDocumentModelMixin, GenericModelMixin, CommonServiceInfo, CommonInfo):
+class OgcWfs(OgcService):
     objects = WfsManager()
 
     class Meta:
@@ -124,7 +163,7 @@ class WfsService(Service, CapabilitiesDocumentModelMixin, GenericModelMixin, Com
         self.featuretypes.update(is_active=self.is_active)
 
 
-class CswService(Service, CapabilitiesDocumentModelMixin, GenericModelMixin, CommonServiceInfo, CommonInfo):
+class OgcCsw(OgcService):
     class Meta:
         verbose_name = _("Catalogue Service")
         verbose_name_plural = _("Catalogue Services")
@@ -156,7 +195,7 @@ class OperationUrl(CommonInfo):
                                         related_query_name="operation_url",
                                         verbose_name=_("internet mime type"),
                                         help_text=_("all available mime types of the remote url"))
-    service = models.ForeignKey(to=Service,
+    service = models.ForeignKey(to=OgcService,
                                 on_delete=models.CASCADE,
                                 editable=False,
                                 related_name="operation_urls",
@@ -179,7 +218,7 @@ class ServiceElement(CapabilitiesDocumentModelMixin, GenericModelMixin, CommonSe
     id = models.UUIDField(primary_key=True,
                           default=uuid4,
                           editable=False)
-    service = models.ForeignKey(to=Service,
+    service = models.ForeignKey(to=OgcService,
                                 on_delete=models.CASCADE,
                                 editable=False,
                                 related_name="%(class)ss",
@@ -295,7 +334,7 @@ class Layer(ServiceElement, MPTTModel):
             # is the most efficient way to do it.
             if self.is_active:
                 self.get_family().update(is_active=self.is_active)
-                Service.objects.filter(pk=self.service_id).update(is_active=self.is_active)
+                OgcServiceClient.objects.filter(pk=self.service_id).update(is_active=self.is_active)
             else:
                 self.get_descendants().update(is_active=self.is_active)
 
@@ -401,16 +440,16 @@ class FeatureType(ServiceElement):
         adding = self._state.adding
         super().save(*args, **kwargs)
         if not adding and self.is_active:
-            Service.objects.filter(pk=self.service_id).update(is_active=self.is_active)
+            OgcServiceClient.objects.filter(pk=self.service_id).update(is_active=self.is_active)
 
     def fetch_describe_feature_type_document(self, save=True):
         """ Return the fetched described feature type document and update the content if save is True """
         base_url = self.service.operation_urls.values_list('url', flat=True)\
                                               .get(operation=OGCOperationEnum.DESCRIBE_FEATURE_TYPE.value,
                                                    method=HttpMethodEnum.GET.value)
-        request = OgcService(base_url=base_url,
-                             service_type=self.service.service_type_name,
-                             version=self.service.service_version)\
+        request = OgcServiceClient(base_url=base_url,
+                                   service_type=self.service.service_type_name,
+                                   version=self.service.service_version)\
                     .get_describe_feature_type_request(type_name_list=self.identifier)
         if hasattr(self.service, "external_authentication"):
             username, password = self.service.external_authentication.decrypt()

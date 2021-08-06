@@ -1,8 +1,8 @@
 from django import forms
 
 from main.forms import Form
-from resourceNew.models import CswService
+from resourceNew.models import OgcCsw
 
 
 class StartHarvest(Form):
-    service = forms.ModelChoiceField(queryset=CswService.objects.all())
+    service = forms.ModelChoiceField(queryset=OgcCsw.objects.all())
