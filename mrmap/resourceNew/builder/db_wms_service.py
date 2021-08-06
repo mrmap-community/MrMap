@@ -29,15 +29,15 @@ class AbstractOgcDbServiceBuilder(ABC):
     _layer_content_type = ContentType.objects.get_for_model(Layer)
     _wms_service_content_type = ContentType.objects.get_for_model(OgcWms)
 
-    def __init__(self, proto_service, db_service=None) -> None:
+    def __init__(self, proto_service) -> None:
         """A fresh builder instance should contain a blank service object, which is
         used in further assembly.
         """
         self._proto_service = proto_service
-        self.reset(db_service=db_service)
+        self.reset()
 
-    def reset(self, db_service=None, *args, **kwargs) -> None:
-        self._service = db_service
+    def reset(self, *args, **kwargs) -> None:
+        self._service = None
         self._service_metadata = None
         self._metadata_contact = None
         self._operation_urls = []
@@ -56,11 +56,7 @@ class AbstractOgcDbServiceBuilder(ABC):
 
     def construct_service(self) -> None:
         """Convert the proto_service to model instance and store it in private variable."""
-        if not self._service:
-            self._service = self._proto_service.convert_to_model()
-        else:
-            # FIXME: use a generic update_from_dict(self._proto_service.get_field_dict()) to update all fields
-            self._service.version = self._proto_service.version
+        self._service = self._proto_service.convert_to_model()
 
     def construct_service_metadata_contact(self) -> None:
         self._metadata_contact = self._proto_service.service_metadata.service_contact.convert_to_model()

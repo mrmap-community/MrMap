@@ -1,5 +1,5 @@
 from django.db.models import ExpressionWrapper, BooleanField, Q, Count
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from extra_views import UpdateWithInlinesView, CreateWithInlinesView
 from guardian.core import ObjectPermissionChecker
 from MrMap.icons import get_icon, IconEnum
@@ -138,20 +138,32 @@ class RegisterServiceFormView(SecuredFormView):
 
 
 # todo: implement a secured CreateWithInlinesView version
-class OgcWmsCreateView(CreateWithInlinesView):
+class RegisterOgcWmsView(CreateWithInlinesView):
     model = OgcWms
     inlines = [ExternalAuthenticationInline]
     form_class = CreateOgcWmsModelForm
-    #update_query_string = True
     template_name = "MrMap/detail_views/generic_form.html"
-
-    def get_success_url(self):
-        return self.model.get_table_url()
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs.update({"request": self.request})
         return kwargs
+
+    def form_valid(self, form):
+        # avoid from saving the object, cause the ogc service builder should create the service object while
+        # registration processing. So if the builder failed, the service is not stored to the database.
+        pass
+
+    def forms_valid(self, form, inlines):
+        # todo: add external_auth args
+        job_pk = service_tasks.register_ogc_wms(get_capabilities_url=form.cleaned_data["get_capabilities_url"],
+                                                **{"owned_by_org_pk": form.cleaned_data["owned_by_org"].pk})
+        try:
+            job = Job.objects.get(pk=job_pk)
+            return HttpResponseRedirect(job.get_absolute_url())
+        except Job.ObjectDoesNotExist:
+            pass
+        return HttpResponseRedirect(OgcWms.get_table_url())
 
 
 class OgcWmsActivateView(SecuredUpdateView):

@@ -38,9 +38,10 @@ def register_service(self,
              bind=True,
              base=NewJob)
 def register_ogc_wms(self,
-                     service_pk,
+                     get_capabilities_url,
+                     authentication=None,
                      **kwargs):
-    workflow = chain(build_full_wms_service_task.s(service_pk, **kwargs) |
+    workflow = chain(build_full_wms_service_task.s(get_capabilities_url, authentication, **kwargs) |
                      schedule_collect_linked_metadata.s(**kwargs))
     workflow.apply_async()
     return self.job.pk
@@ -219,7 +220,8 @@ def parse_remote_metadata_xml_for_service(self,
              bind=True,
              base=CurrentTask)
 def build_full_wms_service_task(self,
-                                service_pk,
+                                get_capabilities_url,
+                                authentication=None,
                                 **kwargs):
     if self.task:
         self.task.status = PendingTaskEnum.STARTED.value
@@ -227,15 +229,16 @@ def build_full_wms_service_task(self,
         self.task.started_at = timezone.now()
         self.task.save()
 
-    db_service = OgcWms.objects.get(pk=service_pk)
-    db_service.download_capability_doc()
+    auth = None
+    if authentication:
+        # todo
+        pass
 
-    if self.task:
-        self.task.phase = "building wms..."
-        self.task.progress = 1/2
-        self.task.save()
+    request = Request(method="GET",
+                      url=get_capabilities_url,
+                      auth=auth)
 
-    RegisterOgcWmsService.register_service_from_local(db_service=db_service)
+    db_service = RegisterOgcWmsService.register_service_from_remote(request=request)
 
     if self.task:
         self.task.phase = f'Done. <a href="{db_service.get_absolute_url()}">{db_service}</a>'

@@ -82,7 +82,7 @@ class CreateOgcWmsModelForm(ModelForm):
 
     def save(self, commit=True):
         self.instance.owned_by_org = self.cleaned_data["owned_by_org"]
-        return super().save(commit=True)
+        return super().save(commit=commit)
 
 
 class UpdateOgcWmsModelForm(ModelForm):

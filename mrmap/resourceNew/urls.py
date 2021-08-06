@@ -1,5 +1,5 @@
 from django.urls import path
-from resourceNew.views import service as service_views
+from resourceNew.views import ogc_service as service_views
 from resourceNew.views import metadata as metadata_views
 from resourceNew.views import xml as xml_views
 from resourceNew.views import mapcontext as mapcontext_views
@@ -16,7 +16,7 @@ urlpatterns = [
 
 
     path("service/wms", service_views.WmsListView.as_view(), name="ogc_wms_list"),
-    path("service/wms/add", service_views.OgcWmsCreateView.as_view(), name="ogc_wms_add"),
+    path("service/wms/add", service_views.RegisterOgcWmsView.as_view(), name="ogc_wms_add"),
     path("service/layers", service_views.LayerListView.as_view(), name="layer_list"),
 
     path("service/wfs", service_views.WfsListView.as_view(), name="ogc_wfs_list"),

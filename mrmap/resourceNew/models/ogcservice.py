@@ -73,7 +73,7 @@ class OgcService(CapabilitiesDocumentModelMixin, GenericModelMixin, CommonServic
         adding = self._state.adding
         old = None
         if not adding:
-            old = OgcWms.objects.get(pk=self.pk)
+            old = OgcService.objects.get(pk=self.pk)
         super().save(*args, **kwargs)
         if not adding and old and old.is_active != self.is_active:
             self.activate_routine()
@@ -115,14 +115,6 @@ class OgcService(CapabilitiesDocumentModelMixin, GenericModelMixin, CommonServic
             session.auth = self.external_authentication.get_auth_for_request()
         return session
 
-    def download_capability_doc(self) -> None:
-        session = self.get_session_for_request()
-        request = Request(method="GET",
-                          url=self.get_capabilities_url)
-        response = session.send(request.prepare())
-        self.xml_backup_file.save(name='capabilities.xml',
-                                  content=ContentFile(response.content))
-
 
 class OgcWms(OgcService):
     objects = WmsManager()
@@ -130,15 +122,6 @@ class OgcWms(OgcService):
     class Meta:
         verbose_name = _("Web Map Service")
         verbose_name_plural = _("Web Map Services")
-
-    def save(self, *args, **kwargs):
-        adding = self._state.adding
-        super().save(*args, **kwargs)
-        if adding:
-            from resourceNew.tasks.service import register_ogc_wms
-            transaction.on_commit(lambda: register_ogc_wms(self.pk,
-                                                           **{"created_by_user_pk": self.created_by_user.pk,
-                                                              "owned_by_org_pk": self.owned_by_org.pk}))
 
     def activate_routine(self):
         # the active sate of this and all descendant elements shall be changed to the new value. Bulk update
